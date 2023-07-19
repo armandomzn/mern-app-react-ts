@@ -17,7 +17,7 @@ const Wrapper = styled.main`
     letter-spacing: 2px;
     color: var(--primary-500);
     text-transform: capitalize;
-    font-size: clamp(1rem, 5vw, 1.875rem);
+    font-size: clamp(1.5rem, 5vw, 3rem);
     margin-bottom: 0;
     font-family: var(--bodyFont);
     font-weight: 700;
@@ -37,6 +37,7 @@ const Wrapper = styled.main`
     h2 {
       font-weight: bold;
       letter-spacing: 3px;
+      font-size: clamp(2rem, 5vw, 4rem);
     }
     span {
       color: var(--primary-500);
@@ -45,12 +46,19 @@ const Wrapper = styled.main`
       max-width: 40rem;
       color: var(--grey-600);
       line-height: 2;
+      font-size: clamp(0.875rem, 5vw, 1rem);
     }
   }
   .btn-hero {
-    font-size: 1.25rem;
-    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
     letter-spacing: 1px;
+  }
+
+  .landing-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
   @media (min-width: 768px) {
