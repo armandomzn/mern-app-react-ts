@@ -35,9 +35,8 @@ export const Wrapper = styled.main`
       transition: var(--transition);
       border: 1px solid transparent;
     }
-    }
-    a:hover {
-      border-bottom: 1px solid var(--primary-500);
-    }
+  }
+  a:hover {
+    border-bottom: 1px solid var(--primary-500);
   }
 `;
