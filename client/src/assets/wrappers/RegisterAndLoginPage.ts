@@ -1,19 +1,22 @@
 import { styled } from "styled-components";
 
-export const Wrapper = styled.section`
+export const Wrapper = styled.section<{ isDarkTheme?: boolean }>`
   min-height: 100vh;
   display: grid;
   align-items: center;
-  background: var(--primary-100);
+  background: ${(props) =>
+    props.isDarkTheme ? `var(--dark-mode-bg-color)` : `var(--primary-100)`};
   .form {
     max-width: 25rem;
     width: 95%;
     margin: 0 auto;
     padding: 2rem;
-    background: var(--white);
+    background: var(--background-secondary-color);
     box-shadow: var(--shadow-2);
     border-radius: var(--border-radius);
-    border-top: 5px solid var(--primary-500);
+    border-top: 5px solid
+      ${(props) =>
+        props.isDarkTheme ? "var(--primary-300)" : "var(--primary-500)"};
   }
   .form-row {
     margin-bottom: 1rem;
@@ -30,13 +33,15 @@ export const Wrapper = styled.section`
   h1 {
     font-size: clamp(1rem, 5vw, 2rem);
     letter-spacing: var(--letter-spacing);
-    color: var(--primary-500);
+    color: ${(props) =>
+      props.isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
     font-weight: 700;
   }
   h4 {
     font-size: clamp(0.875rem, 5vw, 1.3rem);
     letter-spacing: 1px;
-    color: var(--primary-400);
+    color: ${(props) =>
+      props.isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
     font-family: var(--bodyFont);
   }
   .form-label {
@@ -44,18 +49,19 @@ export const Wrapper = styled.section`
     text-transform: capitalize;
     letter-spacing: 1px;
     font-size: 0.875rem;
-    color: var(--grey-800);
+    color: var(--text-color);
     margin-bottom: 0.5rem;
   }
   .form-input {
     padding: 0.375rem 0.75rem;
     width: 100%;
-    border: 1px solid var(--grey-300);
-    background: var(--grey-50);
+    border: 1px solid var(--text-color);
+    background: var(--background-secondary-color);
     border-radius: var(--border-radius);
     font-family: var(--headingFont);
     letter-spacing: var(--letter-spacing);
     height: 2rem;
+    color: var(--text-color);
   }
   .btn-block {
     width: 100%;
@@ -66,9 +72,10 @@ export const Wrapper = styled.section`
     text-transform: capitalize;
     text-align: center;
     letter-spacing: 1px;
-    color: var(--grey-600);
+    color: var(--text-color);
     a {
-      color: var(--primary-500);
+      color: ${(props) =>
+        props.isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
       font-weight: 700;
     }
   }

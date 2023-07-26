@@ -54,16 +54,34 @@ html {
   --fixed-width: 700px;
   --error-alert: #ca322b;
   --green-alert: #d4edda;
+
+  /* DARK MODE  */
+  --dark-mode-bg-color: var(--grey-800);
+  --dark-mode-text-color: var(--grey-200);
+  --dark-mode-bg-secondary-color: var(--grey-700);
+  --dark-mode-text-secondary-color: var(--grey-300);
+  /* GENERAL COLORS  */
+  --background-color: var(--grey-50);
+  --text-color: var(--grey-900);
+  --background-secondary-color: var(--white);
+  --text-secondary-color: var(--grey-500);
+}
+
+.dark-theme {
+  --text-color: var(--dark-mode-text-color);
+  --background-color: var(--dark-mode-bg-color);
+  --text-secondary-color: var(--background-secondary-color);
+  --background-secondary-color: var(--dark-mode-bg-secondary-color);
 }
 
 /* global styles  */
 
 body {
-  background: var(--grey-50);
+  background: var(--background-color);
+  color: var(--text-color);
   font-family: var(--bodyFont);
   font-weight: 400;
   line-height: 1.75;
-  color: var(--black);
 }
 
 p {

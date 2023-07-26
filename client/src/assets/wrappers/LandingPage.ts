@@ -44,7 +44,7 @@ const Wrapper = styled.main`
     }
     p {
       max-width: 40rem;
-      color: var(--grey-600);
+      color: var(--text--color);
       line-height: 2;
       font-size: clamp(0.875rem, 5vw, 1rem);
     }

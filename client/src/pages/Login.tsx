@@ -1,10 +1,12 @@
 import { Wrapper } from "../assets/wrappers/RegisterAndLoginPage";
 import { FormRow } from "../components";
 import { Link } from "react-router-dom";
-
-const Login = () => {
+interface Props {
+  isDarkThemeEnabled: boolean;
+}
+const Login = ({ isDarkThemeEnabled: isDarkTheme }: Props) => {
   return (
-    <Wrapper>
+    <Wrapper isDarkTheme={isDarkTheme}>
       <form className="form">
         <h1 className="logo">mern app</h1>
         <h4>login</h4>
