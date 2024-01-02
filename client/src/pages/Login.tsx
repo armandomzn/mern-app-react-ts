@@ -1,10 +1,10 @@
 import { Wrapper } from "../assets/wrappers/RegisterAndLoginPage";
 import { FormRow } from "../components";
 import { Link } from "react-router-dom";
-interface Props {
-  isDarkThemeEnabled: boolean;
-}
-const Login = ({ isDarkThemeEnabled: isDarkTheme }: Props) => {
+import { useDashBoardContext } from "./DashboardLayout";
+
+const Login = () => {
+  const { isDarkTheme } = useDashBoardContext();
   return (
     <Wrapper isDarkTheme={isDarkTheme}>
       <form className="form">

@@ -11,22 +11,22 @@ export const links: NavLinksProps[] = [
   },
   {
     text: "all jobs",
-    path: "/all-jobs",
+    path: "all-jobs",
     icon: <AiOutlineFileSearch />,
   },
   {
     text: "stats",
-    path: "/stats",
+    path: "stats",
     icon: <BsGraphUp />,
   },
   {
     text: "profile",
-    path: "/profile",
+    path: "profile",
     icon: <AiFillProfile />,
   },
   {
     text: "admin",
-    path: "/admin",
+    path: "admin",
     icon: <MdOutlineAdminPanelSettings />,
   },
 ];

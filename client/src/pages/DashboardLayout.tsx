@@ -3,18 +3,15 @@ import { Outlet } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../components";
 import { DashBoardContextProps } from "../interfaces/DashBoardContextProps";
-
-interface Props {
-  isDarkThemeEnabled: boolean;
-}
+import { checkDefaultTheme } from "../App";
 
 const DashBoardContext = createContext<DashBoardContextProps | undefined>(
   undefined
 );
-const DashboardLayout = ({ isDarkThemeEnabled }: Props) => {
+const DashboardLayout = () => {
   const user = { name: "john" };
   const [showSidebar, setShowSidebar] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(isDarkThemeEnabled);
+  const [isDarkTheme, setIsDarkTheme] = useState(checkDefaultTheme);
   const [isLogoutContainer, setIsLogoutContainer] = useState(false);
 
   const logoutUser = () => {

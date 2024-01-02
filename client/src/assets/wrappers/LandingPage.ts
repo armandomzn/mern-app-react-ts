@@ -6,7 +6,6 @@ const Wrapper = styled.main`
   width: 95%;
 
   nav {
-    height: 6rem;
     display: flex;
     align-items: center;
     height: auto;

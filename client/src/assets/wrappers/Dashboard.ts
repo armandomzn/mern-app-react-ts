@@ -8,6 +8,7 @@ export const Wrapper = styled.section`
   .dashboard-page {
     margin: 0 auto;
     width: 90%;
+    padding: 4rem 0;
   }
   @media (min-width: 992px) {
     .dashboard {

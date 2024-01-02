@@ -21,7 +21,7 @@ const LogoutContainer = () => {
       if (clientX >= right || clientX <= left - 1 || clientY >= bottom - 1) {
         toggleLogoutContainer(false);
       }
-    } else if (logoutContainer.current.contains(e.target as Element)) {
+    }  if (logoutContainer.current.contains(e.target as Element)) {
       const { left, right, top } =
         logoutContainer.current.getBoundingClientRect();
       if (clientX >= right || clientX <= left - 1 || clientY <= top - 1) {

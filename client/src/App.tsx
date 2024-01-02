@@ -1,20 +1,25 @@
 import {
+  AddJob,
+  Admin,
+  AllJobs,
   DashboardLayout,
   Error,
   HomeLayout,
   Landing,
   Login,
+  Profile,
   Register,
+  Stats,
 } from "./pages";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-const checkDefaultTheme = () => {
+export const checkDefaultTheme = () => {
   const isDarkTheme = localStorage.getItem("darkTheme") === "true";
   document.body.classList.toggle("dark-theme", isDarkTheme);
   return isDarkTheme;
 };
 
-const isDarkThemeEnabled = checkDefaultTheme();
+checkDefaultTheme();
 
 const router = createBrowserRouter([
   {
@@ -28,15 +33,22 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login isDarkThemeEnabled={isDarkThemeEnabled}/>,
+        element: <Login />,
       },
       {
         path: "/register",
-        element: <Register isDarkThemeEnabled={isDarkThemeEnabled}/>,
+        element: <Register />,
       },
       {
         path: "/dashboard",
-        element: <DashboardLayout isDarkThemeEnabled={isDarkThemeEnabled} />,
+        element: <DashboardLayout />,
+        children: [
+          { index: true, element: <AddJob /> },
+          { path: "admin", element: <Admin /> },
+          { path: "all-jobs", element: <AllJobs /> },
+          { path: "stats", element: <Stats /> },
+          { path: "profile", element: <Profile /> },
+        ],
       },
     ],
   },

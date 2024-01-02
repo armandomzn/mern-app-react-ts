@@ -4,6 +4,7 @@ export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
   display: none;
   @media (min-width: 992px) {
     display: block;
+    transition: all 0.3s ease-in-out;
     .sidebar-container {
       height: 100vh;
       box-shadow: 1px 0 0 rgba(0, 0, 0, 0.1);
@@ -11,11 +12,12 @@ export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
       background: var(--background-secondary-color);
       margin-left: -25rem;
       /* visibility: hidden; */
-      transition: margin-left 0.3s ease-in-out;
+      transition: all 0.3s ease-in-out;
+      min-height: 100vh;
+      height: 100%;
     }
     .show-sidebar {
       margin-left: 0;
-      /* visibility: visible; */
     }
     header {
       height: 5rem;
@@ -53,10 +55,17 @@ export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
     }
     .nav-link:hover {
       padding-left: 2rem;
-      color: ${props => props.isDarkTheme ? "var(--primary-200)" : "var(--primary-600)"};
+      color: ${(props) =>
+        props.isDarkTheme ? "var(--primary-200)" : "var(--primary-600)"};
     }
     .active {
-      color: ${props => props.isDarkTheme ? "var(--primary-300)" : "var(--primary-600)"};
+      color: ${(props) =>
+        props.isDarkTheme ? "var(--primary-300)" : "var(--primary-600)"};
+    }
+
+    .content {
+      position: sticky;
+      top: 0;
     }
   }
 `;

@@ -1,6 +1,7 @@
 import { styled } from "styled-components";
 
 export const Wrapper = styled.nav`
+  transition: all 0.3s ease-in-out;
   height: 6rem;
   background: var(--background-secondary-color);
   box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
