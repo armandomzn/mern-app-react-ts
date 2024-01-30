@@ -1,11 +1,11 @@
 import { styled } from "styled-components";
 
-export const Wrapper = styled.section<{ isDarkTheme?: boolean }>`
+export const Wrapper = styled.section<{ $isDarkTheme?: boolean }>`
   min-height: 100vh;
   display: grid;
   align-items: center;
   background: ${(props) =>
-    props.isDarkTheme ? `var(--dark-mode-bg-color)` : `var(--primary-100)`};
+    props.$isDarkTheme ? `var(--dark-mode-bg-color)` : `var(--primary-100)`};
   .form {
     max-width: 25rem;
     width: 95%;
@@ -16,7 +16,7 @@ export const Wrapper = styled.section<{ isDarkTheme?: boolean }>`
     border-radius: var(--border-radius);
     border-top: 5px solid
       ${(props) =>
-        props.isDarkTheme ? "var(--primary-300)" : "var(--primary-500)"};
+        props.$isDarkTheme ? "var(--primary-300)" : "var(--primary-500)"};
   }
   .form-row {
     margin-bottom: 1rem;
@@ -34,14 +34,14 @@ export const Wrapper = styled.section<{ isDarkTheme?: boolean }>`
     font-size: clamp(1rem, 5vw, 2rem);
     letter-spacing: var(--letter-spacing);
     color: ${(props) =>
-      props.isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
+      props.$isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
     font-weight: 700;
   }
   h4 {
     font-size: clamp(0.875rem, 5vw, 1.3rem);
     letter-spacing: 1px;
     color: ${(props) =>
-      props.isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
+      props.$isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
     font-family: var(--bodyFont);
   }
   .form-label {
@@ -75,7 +75,7 @@ export const Wrapper = styled.section<{ isDarkTheme?: boolean }>`
     color: var(--text-color);
     a {
       color: ${(props) =>
-        props.isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
+        props.$isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};
       font-weight: 700;
     }
   }

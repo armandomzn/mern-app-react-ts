@@ -48,6 +48,7 @@ const Wrapper = styled.main`
       font-size: clamp(0.875rem, 5vw, 1rem);
     }
   }
+  
   .btn-hero {
     font-size: 1rem;
     padding: 0.5rem 0.75rem;

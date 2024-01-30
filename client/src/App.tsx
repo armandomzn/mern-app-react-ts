@@ -12,6 +12,9 @@ import {
   Stats,
 } from "./pages";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { registerAction } from "./pages/Register";
+import { loginAction } from "./pages/Login";
+import { dashboardLoader } from "./pages/DashboardLayout";
 
 export const checkDefaultTheme = () => {
   const isDarkTheme = localStorage.getItem("darkTheme") === "true";
@@ -19,7 +22,7 @@ export const checkDefaultTheme = () => {
   return isDarkTheme;
 };
 
-checkDefaultTheme();
+const isDarkTheme = checkDefaultTheme();
 
 const router = createBrowserRouter([
   {
@@ -33,15 +36,18 @@ const router = createBrowserRouter([
       },
       {
         path: "/login",
-        element: <Login />,
+        element: <Login isDarkTheme={isDarkTheme} />,
+        action: loginAction,
       },
       {
         path: "/register",
-        element: <Register />,
+        element: <Register isDarkTheme={isDarkTheme} />,
+        action: registerAction,
       },
       {
         path: "/dashboard",
         element: <DashboardLayout />,
+        loader: dashboardLoader,
         children: [
           { index: true, element: <AddJob /> },
           { path: "admin", element: <Admin /> },
