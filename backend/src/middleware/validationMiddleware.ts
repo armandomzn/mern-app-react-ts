@@ -83,18 +83,18 @@ const validateParamId = withValidationErrors([
 
 // This middleware validate the user input (request body) when register user
 const validateRegisterInput = withValidationErrors([
-  body("name").notEmpty().withMessage(" name is required "),
-  body("lastName").notEmpty().withMessage(" lastName is required "),
-  body("location").notEmpty().withMessage(" location is required "),
+  body("name").notEmpty().withMessage(" Name is required "),
+  body("lastName").notEmpty().withMessage(" LastName is required "),
+  body("location").notEmpty().withMessage(" Location is required "),
   body("email")
     .notEmpty()
-    .withMessage(" email is required ")
+    .withMessage(" Email is required ")
     .isEmail()
-    .withMessage(" invalid email format ")
+    .withMessage(" Invalid email format ")
     .custom(async (email) => {
       const user = await UserSchema.findOne({ email });
       if (user) {
-        throw new BadRequestError(" email already exist ");
+        throw new BadRequestError(" Email already exist ");
       }
     }),
   body("userName")
@@ -105,12 +105,12 @@ const validateRegisterInput = withValidationErrors([
     .custom(async (userName) => {
       const user = await UserSchema.findOne({ userName });
       if (user) {
-        throw new BadRequestError(" username already exist ");
+        throw new BadRequestError(" userName already exist ");
       }
     }),
   body("password")
     .notEmpty()
-    .withMessage(" password is required ")
+    .withMessage(" Password is required ")
     .isStrongPassword({
       minLength: 8,
       minLowercase: 1,
@@ -118,35 +118,35 @@ const validateRegisterInput = withValidationErrors([
       minSymbols: 1,
     })
     .withMessage(
-      " password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
+      " Password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
     ),
 ]);
 
 // This middleware will validate the user login request body
 const validateLoginInput = withValidationErrors([
-  body("email").isEmail().withMessage(" invalid email address ").optional(),
+  body("email").isEmail().withMessage(" Invalid email address ").optional(),
   body("userName")
     .isLength({ min: 5 })
     .withMessage(" userName min length must be of 5 ")
     .optional(),
-  body("password").notEmpty().withMessage(" password is required "),
+  body("password").notEmpty().withMessage(" Password is required "),
 ]);
 
 const validateUpdateUserInput = withValidationErrors([
-  body("name").notEmpty().withMessage(" name is required "),
-  body("lastName").notEmpty().withMessage(" lastName is required "),
-  body("location").notEmpty().withMessage(" location is required "),
+  body("name").notEmpty().withMessage(" Name is required "),
+  body("lastName").notEmpty().withMessage(" LastName is required "),
+  body("location").notEmpty().withMessage(" Location is required "),
   body("email")
     .notEmpty()
-    .withMessage(" email is required ")
+    .withMessage(" Email is required ")
     .isEmail()
-    .withMessage(" invalid email format ")
+    .withMessage(" Invalid email format ")
     .custom(async (email, { req }) => {
       const user = await UserSchema.findOne({ email });
       const request = req as CustomRequest;
       // We check if the email exist and the current user is different to the owner of email if is the case then the current user is not the owner of the email
       if (user && request.user.userId.toString() !== user._id.toString()) {
-        throw new BadRequestError(" email already exist ");
+        throw new BadRequestError(" Email already exist ");
       }
     }),
   body("userName")
@@ -159,7 +159,7 @@ const validateUpdateUserInput = withValidationErrors([
       const request = req as CustomRequest;
       // We check if the userName exist and the current user is different to the owner of userName if is the case then the current user is not the owner of the userName
       if (user && request.user.userId.toString() !== user._id.toString()) {
-        throw new BadRequestError(" username already exist ");
+        throw new BadRequestError(" userName already exist ");
       }
     }),
   body("role").not().exists().withMessage(" Cannot change role "),

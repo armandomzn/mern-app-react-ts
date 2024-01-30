@@ -13,7 +13,7 @@ const register = async (req: Request, res: Response) => {
   const hashedPassword = await hashPassword(req.body.password);
   req.body.password = hashedPassword;
   await UserSchema.create(req.body);
-  return res.status(StatusCodes.CREATED).json({ message: "user created" });
+  return res.status(StatusCodes.CREATED).json({ message: "User Created" });
 };
 
 const login = async (req: Request, res: Response) => {
@@ -24,7 +24,7 @@ const login = async (req: Request, res: Response) => {
 
   // If user does not exist we send 401 error
   if (!user) {
-    throw new UnauthenticatedError("invalid credentials");
+    throw new UnauthenticatedError("Invalid Credentials");
   }
 
   // We compare password provided by the current user and hashed password from existing user in the database, if both are correct then we authenticated user sending json web token and creating cookie
@@ -34,7 +34,7 @@ const login = async (req: Request, res: Response) => {
   );
 
   if (!isPasswordValid) {
-    throw new UnauthenticatedError("invalid credentials");
+    throw new UnauthenticatedError("Invalid Credentials");
   }
 
   // We create the token
@@ -49,15 +49,15 @@ const login = async (req: Request, res: Response) => {
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // time in milliseconds, 1day
     secure: process.env.NODE_ENV === "production",
   });
-  return res.status(StatusCodes.OK).json({ message: "user logged in" });
+  return res.status(StatusCodes.OK).json({ message: "User Logged In" });
 };
 
 const logout = (req: Request, res: Response) => {
-  res.cookie("logout", "logout", {
+  res.cookie("token", "logout", {
     httpOnly: true,
     expires: new Date(Date.now()),
   });
-  return res.status(StatusCodes.OK).json({ message: "user logged out" });
+  return res.status(StatusCodes.OK).json({ message: "User Logged Out" });
 };
 
 export { register, login, logout };

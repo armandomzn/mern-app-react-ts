@@ -6,7 +6,7 @@ import { StatusCodes } from "http-status-codes";
 
 const getCurrentUser = async (req: CustomRequest, res: Response) => {
   const user = await UserSchema.findOne({ _id: req.user.userId });
-  return res.status(StatusCodes.OK).json({ user });
+  return res.status(StatusCodes.OK).json(user);
 };
 
 const getApplicationStats = async (req: CustomRequest, res: Response) => {
