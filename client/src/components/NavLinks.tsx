@@ -17,6 +17,7 @@ const NavLinks = ({ isBigSidebar }: Props) => {
             to={path}
             className="nav-link"
             onClick={isBigSidebar ? undefined : toggleSidebar}
+            end
           >
             {icon} {text}
           </NavLink>
