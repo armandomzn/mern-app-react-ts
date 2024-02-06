@@ -5,15 +5,16 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useOutletContext,
 } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../components";
 import { DashBoardContextProps } from "../interfaces/DashBoardContextProps";
-import { checkDefaultTheme } from "../App";
 import { UserPayload } from "../interfaces/UserPayloadProps";
 import { agent } from "../api/agent";
 import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
+import { checkDefaultTheme } from "../utils/checkDefaultTheme";
 
 const DashBoardContext = createContext<DashBoardContextProps | undefined>(
   undefined
@@ -28,6 +29,11 @@ export const dashboardLoader: LoaderFunction = async () => {
   } catch (error) {
     return redirect("/");
   }
+};
+
+type ContextType = {
+  user: UserPayload;
+  // isDarkTheme: boolean;
 };
 
 const DashboardLayout = () => {
@@ -80,7 +86,7 @@ const DashboardLayout = () => {
           <div>
             <Navbar />
             <div className="dashboard-page">
-              <Outlet context={{ user }} />
+              <Outlet context={{ user } satisfies ContextType} />
             </div>
           </div>
         </main>
@@ -88,6 +94,11 @@ const DashboardLayout = () => {
     </DashBoardContext.Provider>
   );
 };
+
+export const useUser = () => {
+  return useOutletContext<ContextType>();
+};
+
 export const useDashBoardContext = () => {
   const context = useContext(DashBoardContext);
   if (context === undefined) {
@@ -95,4 +106,5 @@ export const useDashBoardContext = () => {
   }
   return context;
 };
+
 export default DashboardLayout;

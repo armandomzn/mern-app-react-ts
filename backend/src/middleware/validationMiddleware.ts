@@ -64,7 +64,7 @@ const validateParamId = withValidationErrors([
       throw new BadRequestError(`invalid MongoDB id: ${value}`);
     }
     // This will check if job exist
-    const job = await JobSchema.findById(value);
+    const job = await JobSchema.findById(value).select("+createdBy");
     if (!job) {
       throw new NotFoundError(`no job with id ${value}`);
     }
@@ -72,11 +72,11 @@ const validateParamId = withValidationErrors([
     // This will check if the user is the owner or job
     const request = req as CustomRequest;
     const isAdmin = request.user.role === "admin";
-    const isOwner = request.user.userId === job.createdBy;
+    const isOwner = request.user.userId.toString() === job.createdBy.toString();
     // If is not admin then true, so the admin can see the job from other users
     // If is not the owner of the job then true
     if (!isAdmin && !isOwner) {
-      throw new UnauthorizedError("not authorized to access this route");
+      throw new UnauthorizedError("Not authorized to access this route");
     }
   }),
 ]);
@@ -91,6 +91,7 @@ const validateRegisterInput = withValidationErrors([
     .withMessage(" Email is required ")
     .isEmail()
     .withMessage(" Invalid email format ")
+
     .custom(async (email) => {
       const user = await UserSchema.findOne({ email });
       if (user) {
@@ -102,6 +103,8 @@ const validateRegisterInput = withValidationErrors([
     .withMessage(" userName is required ")
     .isLength({ min: 5 })
     .withMessage(" userName must be at least 5 characters long ")
+    .isLowercase()
+    .withMessage(" userName must be lowercase ")
     .custom(async (userName) => {
       const user = await UserSchema.findOne({ userName });
       if (user) {
@@ -154,6 +157,8 @@ const validateUpdateUserInput = withValidationErrors([
     .withMessage(" userName is required ")
     .isLength({ min: 5 })
     .withMessage(" userName must be at least 5 characters long ")
+    .isLowercase()
+    .withMessage(" userName must be lowercase ")
     .custom(async (userName, { req }) => {
       const user = await UserSchema.findOne({ userName });
       const request = req as CustomRequest;

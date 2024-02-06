@@ -1,6 +1,7 @@
 import "dotenv/config";
 import "express-async-errors";
 import express, { NextFunction, Request, Response } from "express";
+import cors from "cors";
 import morgan from "morgan";
 import { StatusCodes } from "http-status-codes";
 import jobRouter from "./routes/jobRouter";
@@ -19,6 +20,13 @@ const app = express();
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+// TODO: POSSIBLE DELETE
+// let corsOptions = {
+//   origin: ["http://localhost:5173"],
+// };
+// app.use(cors());
+
 
 // Built-in middleware
 app.use(cookieParser());

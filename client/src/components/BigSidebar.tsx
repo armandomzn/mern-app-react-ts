@@ -5,7 +5,7 @@ import { useDashBoardContext } from "../pages/DashboardLayout";
 const BigSidebar = () => {
   const { showSidebar, isDarkTheme } = useDashBoardContext();
   return (
-    <Wrapper isDarkTheme={isDarkTheme}>
+    <Wrapper $isDarkTheme={isDarkTheme}>
       <div
         className={
           showSidebar ? "sidebar-container" : "sidebar-container show-sidebar"

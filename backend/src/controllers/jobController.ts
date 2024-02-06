@@ -4,10 +4,12 @@ import JobSchema from "../models/JobSchema";
 import { CustomRequest } from "../interfaces/CustomRequestType";
 
 const createJob = async (req: CustomRequest, res: Response) => {
-  // We add to the body request the user who is creating the actual job, this information is obtained from the token 
+  // We add to the body request the user who is creating the actual job, this information is obtained from the token
   req.body.createdBy = req.user.userId;
   const job = await JobSchema.create(req.body);
-  return res.status(StatusCodes.CREATED).json({ job });
+  return res
+    .status(StatusCodes.CREATED)
+    .json({ job, message: "Job Created Successfully" });
 };
 
 const getJob = async (req: Request, res: Response) => {
@@ -21,7 +23,7 @@ const deleteJob = async (req: Request, res: Response) => {
   const removedJob = await JobSchema.findByIdAndDelete({ _id: req.params.id });
   return res
     .status(StatusCodes.OK)
-    .json({ message: "job deleted", removedJob });
+    .json({ message: "Job Deleted Successfully", removedJob });
 };
 const updateJob = async (req: Request, res: Response) => {
   // if the req.params.id does not exist this will be managed by express-validator middleware, by validateParamId custom middleware in his corresponding route
@@ -34,7 +36,7 @@ const updateJob = async (req: Request, res: Response) => {
   );
   return res
     .status(StatusCodes.OK)
-    .json({ message: "job updated", updatedJob });
+    .json({ message: "Job Updated Successfully", updatedJob });
 };
 
 const getAllJobs = async (req: CustomRequest, res: Response) => {

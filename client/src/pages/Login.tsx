@@ -21,7 +21,7 @@ export const loginAction: ActionFunction = async ({ request }) => {
   } catch (error) {
     if (isAxiosError(error)) {
       console.log(error);
-      
+
       const errorMessage = Array.isArray(error?.response?.data?.message)
         ? error?.response?.data.message[0]
         : error?.response?.data.message;
@@ -56,7 +56,7 @@ const Login = ({ isDarkTheme }: Props) => {
         />
         <FormRow name="password" type="password" defaultValue="Secret123#" />
         <button type="submit" className="btn btn-block" disabled={isSubmitting}>
-          {isSubmitting ? <MiniSpinner isDarkTheme={isDarkTheme} /> : "submit"}
+          {isSubmitting ? <MiniSpinner /> : "submit"}
         </button>
         <button type="submit" className="btn btn-block">
           explore the app

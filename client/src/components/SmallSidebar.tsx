@@ -7,7 +7,7 @@ const SmallSidebar = () => {
   const { showSidebar, toggleSidebar, isDarkTheme } = useDashBoardContext();
 
   return (
-    <Wrapper isDarkTheme={isDarkTheme}>
+    <Wrapper $isDarkTheme={isDarkTheme}>
       <div
         className={
           showSidebar ? "sidebar-container show-sidebar" : "sidebar-container"

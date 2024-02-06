@@ -12,7 +12,7 @@ const errorHandlerMiddleware = (
   const message =
     err.message ||
     err.errors ||
-    "sorry, something went wrong on the server side";
+    "Sorry, something went wrong on the server side";
   return res.status(statusCode).json({ message });
 };
 

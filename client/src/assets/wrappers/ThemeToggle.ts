@@ -10,7 +10,7 @@ export const Wrapper = styled.button`
   align-items: center;
   cursor: pointer;
   svg {
-    transition: color 0.2s ease-in-out;
+    transition: color 0.3s ease-in-out;
   }
   .toggle-icon {
     color: var(--white);

@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 
-export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
+export const Wrapper = styled.aside<{ $isDarkTheme?: boolean }>`
   .sidebar-container {
     display: grid;
     place-items: center;
@@ -63,7 +63,7 @@ export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
   .close-btn:hover svg {
     transform: rotate(360deg) scale(0.8);
     color: ${(props) =>
-      props.isDarkTheme ? "var(--primary-200)" : "var(--primary-800)"};
+      props.$isDarkTheme ? "var(--primary-200)" : "var(--primary-800)"};
   }
 
   .nav-links {
@@ -87,12 +87,12 @@ export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
 
   .nav-link:hover {
     color: ${(props) =>
-      props.isDarkTheme ? "var(--primary-200)" : "var(--primary-600)"};
+      props.$isDarkTheme ? "var(--primary-200)" : "var(--primary-600)"};
   }
 
   .active {
     color: ${(props) =>
-      props.isDarkTheme ? "var(--primary-300)" : "var(--primary-600)"};
+      props.$isDarkTheme ? "var(--primary-300)" : "var(--primary-600)"};
   }
 
   @media (min-width: 992px) {

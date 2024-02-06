@@ -1,4 +1,21 @@
-const DeleteJob = () => {
-  return <div>DeleteJob</div>;
+import { AxiosResponse, isAxiosError } from "axios";
+import { ActionFunction, redirect } from "react-router-dom";
+import { agent } from "../api/agent";
+import { toast } from "react-toastify";
+
+export const deleteJobAction: ActionFunction = async ({ params }) => {
+  try {
+    const { id } = params;
+    const { data }: AxiosResponse = await agent.Jobs.deleteJob(id as string);
+    toast.success(data?.message);
+  } catch (error) {
+    if (isAxiosError(error)) {
+      const errorMessage = Array.isArray(error?.response?.data?.message)
+        ? error?.response?.data.message[0]
+        : error?.response?.data.message;
+      toast.error(errorMessage, { autoClose: 5000 });
+    }
+    return error;
+  }
+  return redirect("/dashboard/all-jobs");
 };
-export default DeleteJob;

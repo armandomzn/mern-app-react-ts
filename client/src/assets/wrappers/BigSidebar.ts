@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 
-export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
+export const Wrapper = styled.aside<{ $isDarkTheme?: boolean }>`
   display: none;
   @media (min-width: 992px) {
     display: block;
@@ -56,11 +56,11 @@ export const Wrapper = styled.aside<{ isDarkTheme?: boolean }>`
     .nav-link:hover {
       padding-left: 2rem;
       color: ${(props) =>
-        props.isDarkTheme ? "var(--primary-200)" : "var(--primary-600)"};
+        props.$isDarkTheme ? "var(--primary-200)" : "var(--primary-600)"};
     }
     .active {
       color: ${(props) =>
-        props.isDarkTheme ? "var(--primary-300)" : "var(--primary-600)"};
+        props.$isDarkTheme ? "var(--primary-300)" : "var(--primary-600)"};
     }
 
     .content {

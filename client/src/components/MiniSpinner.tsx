@@ -1,11 +1,11 @@
 import { Wrapper } from "../assets/wrappers/MiniSpinner";
 
 interface Props {
-  isDarkTheme: boolean;
+  color?:string;
 }
-const MiniSpinner = ({ isDarkTheme }: Props) => {
+const MiniSpinner = ({ color}: Props) => {
   return (
-    <Wrapper viewBox="0 0 50 50" $isDarkTheme={isDarkTheme}>
+    <Wrapper viewBox="0 0 50 50" $color={color}>
       <circle
         className="path"
         cx="25"

@@ -1,13 +1,12 @@
 import styled from "styled-components";
 
-export const Wrapper = styled.svg<{ $isDarkTheme: boolean }>`
+export const Wrapper = styled.svg<{ $color?: string }>`
   animation: rotate 2s linear infinite;
   width: 1.2rem;
   height: 1.2rem;
 
   & .path {
-    stroke: ${(props) =>
-      props.$isDarkTheme ? `var(--primary-100)` : `var(--primary-500)`};
+    stroke: ${(props) => (props.$color ? props.$color : `var(--primary-100)`)};
     stroke-linecap: round;
     animation: dash 1.5s ease-in-out infinite;
   }

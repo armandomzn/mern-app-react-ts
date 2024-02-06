@@ -48,12 +48,12 @@ const Register = ({ isDarkTheme }: Props) => {
           defaultValue="doe"
           textLabel="last name"
         />
-        <FormRow name="userName" type="text" defaultValue="johnDoe" />
+        <FormRow name="userName" type="text" defaultValue="johndoe" />
         <FormRow name="location" type="text" defaultValue="earth" />
         <FormRow name="email" type="email" defaultValue="john@email.com" />
         <FormRow name="password" type="password" defaultValue="Secret123#" />
         <button type="submit" className="btn btn-block" disabled={isSubmitting}>
-          {isSubmitting ? <MiniSpinner isDarkTheme={isDarkTheme} /> : "submit"}
+          {isSubmitting ? <MiniSpinner /> : "submit"}
         </button>
         <p className="member">
           already a member? <Link to="/login">Login</Link>

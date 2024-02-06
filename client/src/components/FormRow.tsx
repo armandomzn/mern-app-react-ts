@@ -2,7 +2,7 @@ interface Props {
   name: string;
   textLabel?: string;
   type: string;
-  defaultValue: string;
+  defaultValue?: string;
   handlerFunction?: React.ChangeEventHandler<HTMLInputElement> | undefined;
 }
 
