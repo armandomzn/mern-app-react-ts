@@ -31,9 +31,9 @@ export const dashboardLoader: LoaderFunction = async () => {
   }
 };
 
-type ContextType = {
+export type ContextType = {
   user: UserPayload;
-  // isDarkTheme: boolean;
+  isDarkTheme: boolean;
 };
 
 const DashboardLayout = () => {
@@ -86,7 +86,7 @@ const DashboardLayout = () => {
           <div>
             <Navbar />
             <div className="dashboard-page">
-              <Outlet context={{ user } satisfies ContextType} />
+              <Outlet context={{ user, isDarkTheme } satisfies ContextType} />
             </div>
           </div>
         </main>

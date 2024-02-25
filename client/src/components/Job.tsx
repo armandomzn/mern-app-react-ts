@@ -1,14 +1,12 @@
-import { useState } from "react";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 dayjs.extend(advancedFormat);
 import JobInfo from "./JobInfo";
-import useNavigationState from "../hooks/useNavigationState";
 import { JobProps } from "../interfaces/JobProps";
 import { FaLocationArrow } from "react-icons/fa6";
 import { FaCalendar, FaSuitcase } from "react-icons/fa";
 import { Form, Link } from "react-router-dom";
-import { MiniSpinner } from ".";
+import { SubmitBtn } from ".";
 
 interface Props {
   job: JobProps;
@@ -18,11 +16,6 @@ const Job = ({
   job: { _id, company, position, jobStatus, jobType, jobLocation, createdAt },
 }: Props) => {
   const date = dayjs(createdAt).format("MMM Do, YYYY");
-  const { isSubmitting } = useNavigationState();
-  const [status, setStatus] = useState({
-    name: "",
-  });
-
   return (
     <article className="job">
       <header>
@@ -44,21 +37,12 @@ const Job = ({
           edit
         </Link>
         <Form method="DELETE" action={`../delete-job/${_id}`}>
-          <button
-            className="btn delete-btn"
-            disabled={isSubmitting}
-            onClick={() => {
-              setStatus({
-                name: `rem${_id}`,
-              });
-            }}
-          >
-            {status.name === `rem${_id}` && isSubmitting ? (
-              <MiniSpinner color="#450a0a" />
-            ) : (
-              "delete"
-            )}
-          </button>
+          <SubmitBtn
+            nameState={`rem${_id}`}
+            optionalMiniSpinnerColor="#450a0a"
+            optionalClassName="delete-btn"
+            optionalButtonText="delete"
+          />
         </Form>
       </footer>
     </article>

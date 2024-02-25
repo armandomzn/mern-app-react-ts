@@ -6,4 +6,5 @@ export interface UserPayload {
   lastName: string;
   location: string;
   _id: string;
+  avatar?: string;
 }

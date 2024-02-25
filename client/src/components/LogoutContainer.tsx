@@ -52,7 +52,11 @@ const LogoutContainer = () => {
           onMouseEnter={() => toggleLogoutContainer(true)}
           onMouseLeave={handleDropdownOut}
         >
-          <BiSolidUserCircle />
+          {user.avatar ? (
+            <img src={user.avatar} alt="user-avatar" />
+          ) : (
+            <BiSolidUserCircle />
+          )}
           {user.name}
           <IoMdArrowDropdown />
         </button>

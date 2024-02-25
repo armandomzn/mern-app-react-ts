@@ -1,7 +1,6 @@
 import { ActionFunction, Form, redirect } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/DashboardFormPage";
-import { FormRow, MiniSpinner } from "../components";
-import useNavigationState from "../hooks/useNavigationState";
+import { FormRow, SubmitBtn } from "../components";
 import { useDashBoardContext, useUser } from "./DashboardLayout";
 import FormRowSelect from "../components/FormRowSelect";
 import { JOB_STATUS, JOB_TYPE } from "../../../backend/src/helpers/constants";
@@ -14,14 +13,14 @@ export const addJobAction: ActionFunction = async ({ request }) => {
   const addJobForm = Object.fromEntries(formData);
   try {
     const { data }: AxiosResponse = await agent.Jobs.createJob(addJobForm);
-    console.log(data);
     toast.success(data.message);
     return redirect("/dashboard/all-jobs");
   } catch (error) {
-    console.log(error);
     if (isAxiosError(error)) {
       const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message[0]
+        ? error?.response?.data.message
+            .map((message: string) => message)
+            .join(",")
         : error?.response?.data.message;
       toast.error(errorMessage, { autoClose: 5000 });
     }
@@ -30,7 +29,6 @@ export const addJobAction: ActionFunction = async ({ request }) => {
 };
 const AddJob = () => {
   const { user } = useUser();
-  const { isSubmitting } = useNavigationState();
   const { isDarkTheme } = useDashBoardContext();
 
   return (
@@ -57,9 +55,7 @@ const AddJob = () => {
           defaultValue={JOB_TYPE.FULL_TIME}
           labelText="job type"
         />
-        <button className="btn form-btn" disabled={isSubmitting}>
-          {isSubmitting ? <MiniSpinner /> : "submit"}
-        </button>
+        <SubmitBtn nameState="add-job-submit" optionalClassName="form-btn" />
       </Form>
     </Wrapper>
   );

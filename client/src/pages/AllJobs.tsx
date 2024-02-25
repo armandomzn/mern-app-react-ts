@@ -13,7 +13,12 @@ export const allJobsLoader: LoaderFunction = async () => {
     return data;
   } catch (error) {
     if (isAxiosError(error)) {
-      toast.error(error?.response?.data?.message);
+      const errorMessage = Array.isArray(error?.response?.data?.message)
+        ? error?.response?.data.message
+            .map((message: string) => message)
+            .join(",")
+        : error?.response?.data.message;
+      toast.error(errorMessage, { autoClose: 5000 });
     }
     return error;
   }

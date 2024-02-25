@@ -4,4 +4,5 @@ export interface JwtPayload {
   userId: mongoose.Types.ObjectId;
   userName: string;
   role: string;
+  testUser?: boolean;
 }

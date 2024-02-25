@@ -8,6 +8,7 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
     background: var(--background-secondary-color);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-2);
+    transition: background 0.3s ease-in-out;
     p {
       margin-bottom: 0;
       font-size: 1rem;

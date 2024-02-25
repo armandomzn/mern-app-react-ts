@@ -7,10 +7,13 @@ interface Props {
 }
 
 const NavLinks = ({ isBigSidebar }: Props) => {
-  const { toggleSidebar } = useDashBoardContext();
+  const { toggleSidebar, user } = useDashBoardContext();
   return (
     <div className="nav-links">
       {links.map(({ text, path, icon }) => {
+        if (path === "admin" && user.role !== "admin") {
+          return;
+        }
         return (
           <NavLink
             key={text}

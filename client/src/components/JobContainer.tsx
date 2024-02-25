@@ -1,12 +1,12 @@
 import Job from "./Job";
 import { Wrapper } from "../assets/wrappers/JobsContainer";
 import { useAllJobsContext } from "../pages/AllJobs";
-import { useDashBoardContext, useUser } from "../pages/DashboardLayout";
+import { useDashBoardContext } from "../pages/DashboardLayout";
 
 const JobContainer = () => {
   const { jobs } = useAllJobsContext();
   const { isDarkTheme } = useDashBoardContext();
-  // const { isDarkTheme } = useUser();
+
   if (jobs.length === 0) {
     return (
       <Wrapper $isDarkTheme={isDarkTheme}>

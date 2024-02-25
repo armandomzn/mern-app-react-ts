@@ -11,11 +11,10 @@ import { useDashBoardContext } from "./DashboardLayout";
 import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { ServerJobResponse } from "../interfaces/ServerJobResponse";
-import { FormRow, MiniSpinner } from "../components";
+import { FormRow, SubmitBtn } from "../components";
 import { JobProps } from "../interfaces/JobProps";
 import FormRowSelect from "../components/FormRowSelect";
 import { JOB_STATUS, JOB_TYPE } from "../../../backend/src/helpers/constants";
-import useNavigationState from "../hooks/useNavigationState";
 
 export const editJobLoader: LoaderFunction = async ({ params }) => {
   try {
@@ -48,7 +47,9 @@ export const editJobAction: ActionFunction = async ({ request, params }) => {
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message[0]
+        ? error?.response?.data.message
+            .map((message: string) => message)
+            .join(",")
         : error?.response?.data.message;
       toast.error(errorMessage, { autoClose: 5000 });
     }
@@ -60,7 +61,6 @@ const EditJob = () => {
   const { position, jobLocation, jobType, company, jobStatus } =
     useLoaderData() as JobProps;
   const { isDarkTheme } = useDashBoardContext();
-  const { isSubmitting } = useNavigationState();
   return (
     <Form method="PATCH">
       <Wrapper $isDarkTheme={isDarkTheme}>
@@ -85,9 +85,11 @@ const EditJob = () => {
           defaultValue={jobType}
           labelText="job type"
         />
-        <button className="btn form-btn" disabled={isSubmitting}>
-          {isSubmitting ? <MiniSpinner /> : "submit"}
-        </button>
+        <SubmitBtn
+          nameState={`update-job-submit`}
+          optionalClassName="form-btn"
+          optionalButtonText="edit"
+        />
       </Wrapper>
     </Form>
   );

@@ -11,11 +11,12 @@ export const deleteJobAction: ActionFunction = async ({ params }) => {
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message[0]
+        ? error?.response?.data.message
+            .map((message: string) => message)
+            .join(",")
         : error?.response?.data.message;
       toast.error(errorMessage, { autoClose: 5000 });
     }
-    return error;
   }
   return redirect("/dashboard/all-jobs");
 };

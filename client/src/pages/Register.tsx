@@ -1,9 +1,8 @@
 import { AxiosResponse, isAxiosError } from "axios";
 import { ActionFunction, Form, Link, redirect } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/RegisterAndLoginPage";
-import { FormRow, MiniSpinner } from "../components";
+import { FormRow, SubmitBtn } from "../components";
 import { agent } from "../api/agent";
-import useNavigationState from "../hooks/useNavigationState";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -26,7 +25,9 @@ export const registerAction: ActionFunction = async ({ request }) => {
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message[0]
+        ? error?.response?.data.message
+            .map((message: string) => message)
+            .join(",")
         : error?.response?.data.message;
       toast.error(errorMessage, { autoClose: 5000 });
     }
@@ -35,7 +36,6 @@ export const registerAction: ActionFunction = async ({ request }) => {
 };
 
 const Register = ({ isDarkTheme }: Props) => {
-  const { isSubmitting } = useNavigationState();
   return (
     <Wrapper $isDarkTheme={isDarkTheme}>
       <Form method="POST" className="form">
@@ -52,9 +52,10 @@ const Register = ({ isDarkTheme }: Props) => {
         <FormRow name="location" type="text" defaultValue="earth" />
         <FormRow name="email" type="email" defaultValue="john@email.com" />
         <FormRow name="password" type="password" defaultValue="Secret123#" />
-        <button type="submit" className="btn btn-block" disabled={isSubmitting}>
-          {isSubmitting ? <MiniSpinner /> : "submit"}
-        </button>
+        <SubmitBtn
+          nameState={`register-submit`}
+          optionalClassName="btn-block"
+        />
         <p className="member">
           already a member? <Link to="/login">Login</Link>
         </p>

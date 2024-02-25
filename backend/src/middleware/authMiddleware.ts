@@ -1,5 +1,6 @@
 import { Response, NextFunction } from "express";
 import {
+  BadRequestError,
   UnauthenticatedError,
   UnauthorizedError,
 } from "../errors/customErrors";
@@ -18,10 +19,12 @@ const authenticateUser = (
   }
   try {
     const { userId, userName, role } = verifyJWT(token) as JwtPayload;
+    const testUser = userId.toString() === "65d7d158fb173fc998d49247";
     req.user = {
       userId,
       role,
       userName,
+      testUser,
     };
     next();
   } catch (error) {
@@ -38,4 +41,15 @@ const authorizePermissions = (...rest: string[]) => {
   };
 };
 
-export { authenticateUser, authorizePermissions };
+const checkForTestUser = (
+  req: CustomRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.user.testUser) {
+    throw new BadRequestError("Demo User, Read Only!");
+  }
+  next();
+};
+
+export { authenticateUser, authorizePermissions, checkForTestUser };

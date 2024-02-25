@@ -9,6 +9,7 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
   transition: all 0.3s ease-in-out;
 
   h3 {
+    transition: color 0.3s ease-in-out;
     color: ${(props) =>
       props.$isDarkTheme ? `var(--text-color)` : "var(--primary-500)"};
     letter-spacing: 1px;
@@ -60,5 +61,16 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
     .form-btn {
       grid-column: 1 / span 1;
     }
+  }
+
+  .avatar-container {
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  .flex-container {
+    display: grid;
+    width: 50%;
+    grid-template-columns: 1fr;
   }
 `;

@@ -3,6 +3,7 @@ import { UserPayload } from "../interfaces/UserPayloadProps";
 import { JobPostProps } from "../interfaces/JobPostProps";
 import { JobsProps } from "../interfaces/JobsProps";
 import { ServerJobResponse } from "../interfaces/ServerJobResponse";
+import { AppStatsProps } from "../interfaces/AppStatsProps";
 
 // The main url is in vite.config.ts file in proxy property
 axios.defaults.baseURL = "/api/v1";
@@ -55,6 +56,15 @@ const Jobs = {
 const User = {
   getCurrentUser: async () => {
     return await requests.get<UserPayload>("user/current-user");
+  },
+  getAdminStats: async () => {
+    return await requests.get<AppStatsProps>("user/admin/app-stats");
+  },
+  updateUser: async (body: FormData) => {
+    return await requests.patch<UserPayload>("user/update-user", body);
+  },
+  deleteProfileImage: async () => {
+    return await requests.delete("user/delete-profile-image");
   },
 };
 

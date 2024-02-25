@@ -1,10 +1,15 @@
 import { Wrapper } from "../assets/wrappers/RegisterAndLoginPage";
-import { FormRow, MiniSpinner } from "../components";
-import { ActionFunction, Form, Link, redirect } from "react-router-dom";
+import { FormRow, SubmitBtn } from "../components";
+import {
+  ActionFunction,
+  Form,
+  Link,
+  redirect,
+  useNavigate,
+} from "react-router-dom";
 import { agent } from "../api/agent";
 import { toast } from "react-toastify";
 import { AxiosResponse, isAxiosError } from "axios";
-import useNavigationState from "../hooks/useNavigationState";
 import React, { useState } from "react";
 interface Props {
   isDarkTheme: boolean;
@@ -32,8 +37,8 @@ export const loginAction: ActionFunction = async ({ request }) => {
 };
 
 const Login = ({ isDarkTheme }: Props) => {
-  const { isSubmitting } = useNavigationState();
   const [emailOrUserName, setEmailOrUserName] = useState("email");
+  const navigate = useNavigate();
   const handleEmailOrUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     if (emailRegex.test(e.target.value)) {
@@ -41,6 +46,28 @@ const Login = ({ isDarkTheme }: Props) => {
       return;
     }
     setEmailOrUserName("userName");
+  };
+
+  const loginDemoUser = async () => {
+    const user = {
+      email: "alice.smith@example.com",
+      password: "Password1!",
+    };
+    try {
+      await agent.Auth.login(user);
+      toast.success("Testing User");
+      navigate("/dashboard");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage = Array.isArray(error?.response?.data?.message)
+          ? error?.response?.data.message
+              .map((message: string) => message)
+              .join(",")
+          : error?.response?.data.message;
+        toast.error(errorMessage, { autoClose: 5000 });
+      }
+      return error;
+    }
   };
   return (
     <Wrapper $isDarkTheme={isDarkTheme}>
@@ -55,10 +82,9 @@ const Login = ({ isDarkTheme }: Props) => {
           handlerFunction={handleEmailOrUsername}
         />
         <FormRow name="password" type="password" defaultValue="Secret123#" />
-        <button type="submit" className="btn btn-block" disabled={isSubmitting}>
-          {isSubmitting ? <MiniSpinner /> : "submit"}
-        </button>
-        <button type="submit" className="btn btn-block">
+
+        <SubmitBtn nameState={`login-submit`} optionalClassName="btn-block" />
+        <button type="button" className="btn btn-block" onClick={loginDemoUser}>
           explore the app
         </button>
         <p className="member">

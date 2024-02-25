@@ -21,6 +21,8 @@ import { allJobsLoader } from "./pages/AllJobs";
 import { checkDefaultTheme } from "./utils/checkDefaultTheme";
 import { editJobAction, editJobLoader } from "./pages/EditJob";
 import { deleteJobAction } from "./pages/DeleteJob";
+import { loaderAdmin } from "./pages/Admin";
+import { deleteProfileAction, profileAction } from "./pages/Profile";
 
 const isDarkTheme = checkDefaultTheme();
 
@@ -50,10 +52,11 @@ const router = createBrowserRouter([
         loader: dashboardLoader,
         children: [
           { index: true, element: <AddJob />, action: addJobAction },
-          { path: "admin", element: <Admin /> },
+          { path: "admin", element: <Admin />, loader: loaderAdmin },
           { path: "all-jobs", element: <AllJobs />, loader: allJobsLoader },
           { path: "stats", element: <Stats /> },
-          { path: "profile", element: <Profile /> },
+          { path: "profile", element: <Profile />, action: profileAction },
+          { path: "delete-profile-image", action: deleteProfileAction },
           {
             path: "edit-job/:id",
             element: <EditJob />,

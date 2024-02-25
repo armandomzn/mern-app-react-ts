@@ -1,9 +1,9 @@
 import { Wrapper } from "../assets/wrappers/MiniSpinner";
 
 interface Props {
-  color?:string;
+  color?: string;
 }
-const MiniSpinner = ({ color}: Props) => {
+const MiniSpinner = ({ color }: Props) => {
   return (
     <Wrapper viewBox="0 0 50 50" $color={color}>
       <circle

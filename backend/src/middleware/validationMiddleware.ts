@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Errback, NextFunction, Request, Response } from "express";
 import {
   ValidationChain,
   body,
@@ -16,6 +16,7 @@ import mongoose from "mongoose";
 import JobSchema from "../models/JobSchema";
 import UserSchema from "../models/UserSchema";
 import { CustomRequest } from "../interfaces/CustomRequestType";
+import multer from "multer";
 
 // This middleware function will validate the user body request using express-validator, if there are errors we are going to throw customizing errors from customErrors that will be catch it by the errorHandlerMiddleware file
 const withValidationErrors = (
@@ -139,35 +140,85 @@ const validateUpdateUserInput = withValidationErrors([
   body("name").notEmpty().withMessage(" Name is required "),
   body("lastName").notEmpty().withMessage(" LastName is required "),
   body("location").notEmpty().withMessage(" Location is required "),
-  body("email")
-    .notEmpty()
-    .withMessage(" Email is required ")
-    .isEmail()
-    .withMessage(" Invalid email format ")
-    .custom(async (email, { req }) => {
-      const user = await UserSchema.findOne({ email });
-      const request = req as CustomRequest;
-      // We check if the email exist and the current user is different to the owner of email if is the case then the current user is not the owner of the email
-      if (user && request.user.userId.toString() !== user._id.toString()) {
-        throw new BadRequestError(" Email already exist ");
+  // body("email")
+  //   .notEmpty()
+  //   .withMessage(" Email is required ")
+  //   .isEmail()
+  //   .withMessage(" Invalid email format ")
+  //   .custom(async (email, { req }) => {
+  //     const user = await UserSchema.findOne({ email });
+  //     const request = req as CustomRequest;
+  //     // We check if the email exist and the current user is different to the owner of email if is the case then the current user is not the owner of the email
+  //     if (user && request.user.userId.toString() !== user._id.toString()) {
+  //       throw new BadRequestError(" Email already exist ");
+  //     }
+  //   }),
+  // body("userName")
+  //   .notEmpty()
+  //   .withMessage(" userName is required ")
+  //   .isLength({ min: 5 })
+  //   .withMessage(" userName must be at least 5 characters long ")
+  //   .isLowercase()
+  //   .withMessage(" userName must be lowercase ")
+  //   .custom(async (userName, { req }) => {
+  //     const user = await UserSchema.findOne({ userName });
+  //     const request = req as CustomRequest;
+  //     // We check if the userName exist and the current user is different to the owner of userName if is the case then the current user is not the owner of the userName
+  //     if (user && request.user.userId.toString() !== user._id.toString()) {
+  //       throw new BadRequestError(" userName already exist ");
+  //     }
+  //   }),
+  body("avatar")
+    .optional()
+    .custom((value, { req }) => {
+      if (
+        !["image/png", "image/jpg", "image/jpeg", "image/svg+xml"].includes(
+          req.file.mimetype
+        )
+      ) {
+        throw new BadRequestError(
+          " avatar field required and image of type .png, .jpg, .jpeg or .svg format "
+        );
       }
+      return true;
     }),
-  body("userName")
-    .notEmpty()
-    .withMessage(" userName is required ")
-    .isLength({ min: 5 })
-    .withMessage(" userName must be at least 5 characters long ")
-    .isLowercase()
-    .withMessage(" userName must be lowercase ")
-    .custom(async (userName, { req }) => {
-      const user = await UserSchema.findOne({ userName });
-      const request = req as CustomRequest;
-      // We check if the userName exist and the current user is different to the owner of userName if is the case then the current user is not the owner of the userName
-      if (user && request.user.userId.toString() !== user._id.toString()) {
-        throw new BadRequestError(" userName already exist ");
-      }
-    }),
-  body("role").not().exists().withMessage(" Cannot change role "),
+]);
+
+const validateImageSize = (
+  err: Errback,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (err instanceof multer.MulterError) {
+    throw new BadRequestError("Size of image must be 500 KB (0.5M) or less");
+  }
+  next();
+};
+
+const validateProfileParamId = withValidationErrors([
+  param("id").custom(async (value, { req }) => {
+    // This will check if mongodb id is valid
+    const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
+    if (!isValidMongoId) {
+      throw new BadRequestError(`invalid MongoDB id: ${value}`);
+    }
+    // This will check if user exist
+    const user = await UserSchema.findById(value);
+    if (!user) {
+      throw new NotFoundError(`no user with id ${value}`);
+    }
+
+    // This will check if the user is the owner or job
+    const request = req as CustomRequest;
+    const isAdmin = request.user.role === "admin";
+    const isOwner = request.user.userId.toString() === user._id.toString();
+    // If is not admin then true, so the admin can see the job from other users
+    // If is not the owner of the job then true
+    if (!isAdmin && !isOwner) {
+      throw new UnauthorizedError("Not authorized to access this route");
+    }
+  }),
 ]);
 
 export {
@@ -176,4 +227,6 @@ export {
   validateRegisterInput,
   validateLoginInput,
   validateUpdateUserInput,
+  validateImageSize,
+  validateProfileParamId,
 };

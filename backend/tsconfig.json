@@ -1,17 +1,13 @@
 {
-    "compilerOptions": {
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "target": "ES2020",
-        "sourceMap": true,
-        "outDir": "dist",
-        "baseUrl": "src",
-        "noImplicitAny": true,
-        "typeRoots": [
-            "types.d.ts"
-        ]
-    },
-    "include": [
-        "src/**/*", "types.d.ts",
-    ]
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": "src",
+    "noImplicitAny": true,
+    "typeRoots": ["types.d.ts"]
+  },
+  "include": ["./src/**/*", "types.d.ts"]
 }

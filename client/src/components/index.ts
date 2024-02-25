@@ -6,6 +6,7 @@ import NavLinks from "./NavLinks";
 import MiniSpinner from "./MiniSpinner";
 import JobContainer from "./JobContainer";
 import SearchContainer from "./SearchContainer";
+import SubmitBtn from "./SubmitBtn";
 
 export {
   FormRow,
@@ -16,4 +17,5 @@ export {
   MiniSpinner,
   JobContainer,
   SearchContainer,
+  SubmitBtn,
 };
