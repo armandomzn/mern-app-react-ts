@@ -51,6 +51,9 @@ const Jobs = {
   deleteJob: async (id: string) => {
     return await requests.delete(`/jobs/${id}`);
   },
+  getJobStats: async () => {
+    return await requests.get("/jobs/stats");
+  },
 };
 
 const User = {

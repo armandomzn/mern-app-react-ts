@@ -3,14 +3,17 @@ import styled from "styled-components";
 export const Wrapper = styled.article<{
   $backgroundColor: string;
   $color: string;
+  $isDarkTheme: boolean;
 }>`
   box-shadow: var(--shadow-1);
-  background: ${(props) => props.$backgroundColor};
+  background: ${(props) =>
+    props.$isDarkTheme ? "none" : props.$backgroundColor};
   border-radius: var(--border-radius);
   padding: 1rem 2rem;
   border-bottom: 0.5rem solid ${(props) => props.$color};
   display: grid;
   gap: 1rem;
+  transition: background 0.3s ease-in-out;
 
   header {
     display: flex;

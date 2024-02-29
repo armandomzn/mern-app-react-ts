@@ -53,9 +53,9 @@ const LogoutContainer = () => {
           onMouseLeave={handleDropdownOut}
         >
           {user.avatar ? (
-            <img src={user.avatar} alt="user-avatar" />
+            <img src={user.avatar} alt="user-avatar" className="avatar" />
           ) : (
-            <BiSolidUserCircle />
+            <BiSolidUserCircle className="avatar" />
           )}
           {user.name}
           <IoMdArrowDropdown />

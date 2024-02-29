@@ -4,10 +4,7 @@ import { Wrapper } from "../assets/wrappers/RegisterAndLoginPage";
 import { FormRow, SubmitBtn } from "../components";
 import { agent } from "../api/agent";
 import { toast } from "react-toastify";
-
-interface Props {
-  isDarkTheme: boolean;
-}
+import useDetectDarkMode from "../hooks/useDetectDarkMode";
 
 // With this registerAction we can use formData API to manage form inputs
 // we can handle data from the request before it is submitted even when the request has already been made
@@ -35,9 +32,10 @@ export const registerAction: ActionFunction = async ({ request }) => {
   }
 };
 
-const Register = ({ isDarkTheme }: Props) => {
+const Register = () => {
+  const { isDarkMode } = useDetectDarkMode();
   return (
-    <Wrapper $isDarkTheme={isDarkTheme}>
+    <Wrapper $isDarkTheme={isDarkMode}>
       <Form method="POST" className="form">
         <h1 className="logo">mern app</h1>
         <h4>register</h4>

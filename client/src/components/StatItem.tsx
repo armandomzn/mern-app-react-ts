@@ -1,4 +1,5 @@
 import { Wrapper } from "../assets/wrappers/StatItem";
+import { useUser } from "../pages/DashboardLayout";
 
 interface Props {
   count: number;
@@ -8,8 +9,13 @@ interface Props {
   backgroundColor: string;
 }
 const StatItem = ({ count, title, icon, color, backgroundColor }: Props) => {
+  const { isDarkTheme } = useUser();
   return (
-    <Wrapper $backgroundColor={backgroundColor} $color={color}>
+    <Wrapper
+      $backgroundColor={backgroundColor}
+      $color={color}
+      $isDarkTheme={isDarkTheme}
+    >
       <header>
         <span className="count">{count}</span>
         <span className="icon">{icon}</span>

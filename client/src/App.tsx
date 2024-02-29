@@ -23,8 +23,9 @@ import { editJobAction, editJobLoader } from "./pages/EditJob";
 import { deleteJobAction } from "./pages/DeleteJob";
 import { loaderAdmin } from "./pages/Admin";
 import { deleteProfileAction, profileAction } from "./pages/Profile";
+import { statsLoader } from "./pages/Stats";
 
-const isDarkTheme = checkDefaultTheme();
+checkDefaultTheme();
 
 const router = createBrowserRouter([
   {
@@ -38,12 +39,12 @@ const router = createBrowserRouter([
       },
       {
         path: "login",
-        element: <Login isDarkTheme={isDarkTheme} />,
+        element: <Login />,
         action: loginAction,
       },
       {
         path: "register",
-        element: <Register isDarkTheme={isDarkTheme} />,
+        element: <Register />,
         action: registerAction,
       },
       {
@@ -54,7 +55,7 @@ const router = createBrowserRouter([
           { index: true, element: <AddJob />, action: addJobAction },
           { path: "admin", element: <Admin />, loader: loaderAdmin },
           { path: "all-jobs", element: <AllJobs />, loader: allJobsLoader },
-          { path: "stats", element: <Stats /> },
+          { path: "stats", element: <Stats />, loader: statsLoader },
           { path: "profile", element: <Profile />, action: profileAction },
           { path: "delete-profile-image", action: deleteProfileAction },
           {

@@ -14,7 +14,9 @@ export const loaderAdmin: LoaderFunction = async () => {
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message[0]
+        ? error?.response?.data.message
+            .map((message: string) => message)
+            .join(",")
         : error?.response?.data.message;
       toast.error(errorMessage, { autoClose: 5000 });
     }
@@ -36,8 +38,8 @@ const Admin = () => {
         title="current users"
         count={users}
         icon={<FaUsers />}
-        color="#fecaca"
-        backgroundColor="#ef4444"
+        color="#bbf7d0"
+        backgroundColor="#22c55e"
       />
     </Wrapper>
   );

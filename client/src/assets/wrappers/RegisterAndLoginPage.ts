@@ -4,8 +4,9 @@ export const Wrapper = styled.section<{ $isDarkTheme?: boolean }>`
   min-height: 100vh;
   display: grid;
   align-items: center;
+  padding: 4rem 0;
   background: ${(props) =>
-    props.$isDarkTheme ? `var(--dark-mode-bg-color)` : `var(--primary-100)`};
+    props.$isDarkTheme ? `var(--background-color)` : `var(--primary-100)`};
   .form {
     max-width: 25rem;
     width: 95%;

@@ -11,9 +11,7 @@ import { agent } from "../api/agent";
 import { toast } from "react-toastify";
 import { AxiosResponse, isAxiosError } from "axios";
 import React, { useState } from "react";
-interface Props {
-  isDarkTheme: boolean;
-}
+import useDetectDarkMode from "../hooks/useDetectDarkMode";
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -36,8 +34,10 @@ export const loginAction: ActionFunction = async ({ request }) => {
   }
 };
 
-const Login = ({ isDarkTheme }: Props) => {
+const Login = () => {
   const [emailOrUserName, setEmailOrUserName] = useState("email");
+  const { isDarkMode } = useDetectDarkMode();
+
   const navigate = useNavigate();
   const handleEmailOrUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -70,7 +70,7 @@ const Login = ({ isDarkTheme }: Props) => {
     }
   };
   return (
-    <Wrapper $isDarkTheme={isDarkTheme}>
+    <Wrapper $isDarkTheme={isDarkMode}>
       <Form method="POST" className="form">
         <h1 className="logo">mern app</h1>
         <h4>login</h4>

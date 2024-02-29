@@ -14,6 +14,12 @@ export const Wrapper = styled.div`
     height: 1.2rem;
   }
 
+  @media (max-width: 478px) {
+    .avatar {
+      display: none;
+    }
+  }
+
   img {
     width: 25px;
     height: 25px;
