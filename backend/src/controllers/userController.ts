@@ -1,6 +1,6 @@
 import { Response } from "express";
 import fs from "fs";
-import { CustomRequest } from "../interfaces/CustomRequestType";
+import { CustomRequest } from "../interfaces";
 import UserSchema from "../models/UserSchema";
 import JobSchema from "../models/JobSchema";
 import { StatusCodes } from "http-status-codes";

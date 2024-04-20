@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { JwtPayload } from "../interfaces/JwtPayloadProps";
+import { JwtPayload } from "../interfaces";
 
 const createJWT = (payload: JwtPayload) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, {

@@ -5,8 +5,7 @@ import {
   UnauthorizedError,
 } from "../errors/customErrors";
 import { verifyJWT } from "../helpers/tokenUtils";
-import { JwtPayload } from "../interfaces/JwtPayloadProps";
-import { CustomRequest } from "../interfaces/CustomRequestType";
+import { JwtPayload, CustomRequest } from "../interfaces";
 
 const authenticateUser = (
   req: CustomRequest,

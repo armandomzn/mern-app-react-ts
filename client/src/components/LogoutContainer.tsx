@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from "react";
 import { Wrapper } from "../assets/wrappers/LogoutContainer";
 import { BiSolidUserCircle } from "react-icons/bi";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { useDashBoardContext } from "../pages/DashboardLayout";
-import { useRef } from "react";
+import ThemeToggle from "./ThemeToggle";
 const LogoutContainer = () => {
+  const [showIsDarkMode, setShowIsDarkMode] = useState(false);
   const { user, logoutUser, toggleLogoutContainer, isLogoutContainer } =
     useDashBoardContext();
   const dropdownContainer = useRef<HTMLDivElement | null>(null);
@@ -43,6 +45,16 @@ const LogoutContainer = () => {
     }
   };
 
+  useEffect(() => {
+    const windowSize = () => {
+      setShowIsDarkMode(window.innerWidth <= 315);
+    };
+    window.addEventListener("resize", windowSize);
+    return () => {
+      window.removeEventListener("resize", windowSize);
+    };
+  }, []);
+
   return (
     <Wrapper>
       <div onMouseOver={handleDropdownOver} ref={logoutContainer}>
@@ -55,7 +67,9 @@ const LogoutContainer = () => {
           {user.avatar ? (
             <img src={user.avatar} alt="user-avatar" className="avatar" />
           ) : (
-            <BiSolidUserCircle className="avatar" />
+            <span className="avatar">
+              <BiSolidUserCircle />
+            </span>
           )}
           {user.name}
           <IoMdArrowDropdown />
@@ -67,6 +81,7 @@ const LogoutContainer = () => {
         ref={dropdownContainer}
         onMouseLeave={handleDropdownOut}
       >
+        {showIsDarkMode && <ThemeToggle className="dropdown-btn btn" visible />}
         <button type="button" onClick={logoutUser} className="dropdown-btn btn">
           logout
         </button>

@@ -37,7 +37,7 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
     min-height: 100%;
     transition: all 0.3s ease-in-out;
     display: grid;
-    grid-template-rows: 1fr auto auto;
+    grid-template-rows: auto 1fr auto;
     align-items: center;
   }
 
@@ -74,6 +74,7 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
   .content-center {
     padding: 1rem 0 0 0;
     display: grid;
+    align-self: start;
     gap: 1rem;
     grid-template-columns: 1fr;
     border-top: 1px solid var(--grey-200);
@@ -95,8 +96,9 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
     text-align: center;
     text-transform: capitalize;
     letter-spacing: var(--letter-spacing);
-    width: 50%;
     min-height: 100%;
+    justify-self: start;
+    padding: 0 1rem;
   }
 
   .status.pending {
@@ -130,6 +132,18 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
     }
     .delete-btn {
       background: #dc2626;
+    }
+  }
+
+  .page-header {
+    h4 {
+      font-size: clamp(0.875rem, 5vw, 1.2rem);
+      text-transform: none;
+      letter-spacing: var(--letter-spacing);
+      strong {
+        color: ${(props) =>
+          props.$isDarkTheme ? `var(--primary-100)` : `var(--primary-500)`};
+      }
     }
   }
 `;

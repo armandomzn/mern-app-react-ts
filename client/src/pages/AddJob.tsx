@@ -1,7 +1,7 @@
 import { ActionFunction, Form, redirect } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/DashboardFormPage";
 import { FormRow, SubmitBtn } from "../components";
-import { useDashBoardContext, useUser } from "./DashboardLayout";
+import { useUser } from "./DashboardLayout";
 import FormRowSelect from "../components/FormRowSelect";
 import { JOB_STATUS, JOB_TYPE } from "../../../backend/src/helpers/constants";
 import { AxiosResponse, isAxiosError } from "axios";
@@ -28,9 +28,7 @@ export const addJobAction: ActionFunction = async ({ request }) => {
   }
 };
 const AddJob = () => {
-  const { user } = useUser();
-  const { isDarkTheme } = useDashBoardContext();
-
+  const { user, isDarkTheme } = useUser();
   return (
     <Wrapper $isDarkTheme={isDarkTheme}>
       <h3>add job</h3>

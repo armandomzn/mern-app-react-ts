@@ -44,6 +44,9 @@ export const Wrapper = styled.nav`
 
   .logo {
     display: block;
+    @media (max-width: 315px) {
+      display: none;
+    }
   }
 
   .logo-text {

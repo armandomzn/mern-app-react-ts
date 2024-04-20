@@ -11,8 +11,8 @@ const JOB_TYPE = {
 };
 
 const JOB_SORT = {
-  NEWEST_FIRST: "newest",
-  OLDEST_FIRST: "oldest",
+  NEWEST: "newest",
+  OLDEST: "oldest",
   ASCENDING: "a-z",
   DESCENDING: "z-a",
 };

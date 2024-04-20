@@ -3,8 +3,15 @@ interface Props {
   valueList: string[];
   name: string;
   defaultValue?: string;
+  handlerFunction?: React.ChangeEventHandler<HTMLSelectElement> | undefined;
 }
-const FormRowSelect = ({ labelText, name, defaultValue, valueList }: Props) => {
+const FormRowSelect = ({
+  labelText,
+  name,
+  defaultValue,
+  valueList,
+  handlerFunction,
+}: Props) => {
   return (
     <div className="form-row">
       <label htmlFor={name} className="form-label">
@@ -15,6 +22,7 @@ const FormRowSelect = ({ labelText, name, defaultValue, valueList }: Props) => {
         id={name}
         defaultValue={defaultValue}
         className="form-select"
+        onChange={handlerFunction}
       >
         {valueList.map((value) => {
           return (

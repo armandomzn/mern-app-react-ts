@@ -5,6 +5,7 @@ export const Wrapper = styled.div`
   align-items: center;
   grid-template-columns: auto 1fr;
   gap: 1rem;
+
   span svg {
     display: flex;
     align-items: center;
@@ -14,5 +15,6 @@ export const Wrapper = styled.div`
   span {
     text-transform: capitalize;
     letter-spacing: var(--letter-spacing);
+    font-size: clamp(0.875rem, 5vw, 1rem);
   }
 `;

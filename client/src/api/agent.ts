@@ -1,16 +1,17 @@
 import axios from "axios";
 import { UserPayload } from "../interfaces/UserPayloadProps";
 import { JobPostProps } from "../interfaces/JobPostProps";
-import { JobsProps } from "../interfaces/JobsProps";
 import { ServerJobResponse } from "../interfaces/ServerJobResponse";
 import { AppStatsProps } from "../interfaces/AppStatsProps";
+import { PaginationProps } from "../interfaces/PaginationProps";
+import { JobProps } from "../interfaces/JobProps";
 
 // The main url is in vite.config.ts file in proxy property
 axios.defaults.baseURL = "/api/v1";
 
 const requests = {
-  get: async <T>(url: string) => {
-    return await axios.get<T>(url);
+  get: async <T>(url: string, params?: {}) => {
+    return await axios.get<T>(url, { params });
   },
   post: async <T>(url: string, body: {}) => {
     return await axios.post<T>(url, body);
@@ -39,8 +40,8 @@ const Jobs = {
   createJob: async (body: {}) => {
     return await requests.post<JobPostProps>("jobs", body);
   },
-  getAllJobs: async () => {
-    return await requests.get<JobsProps>("jobs");
+  getAllJobs: async (params?: {}) => {
+    return await requests.get<PaginationProps<JobProps[]>>("jobs", params);
   },
   updateJob: async (id: string, body: {}) => {
     return await requests.patch<JobPostProps>(`jobs/${id}`, body);

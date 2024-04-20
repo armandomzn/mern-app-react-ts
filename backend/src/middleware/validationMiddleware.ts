@@ -11,11 +11,10 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "../errors/customErrors";
-import { ValidationMiddleware } from "../interfaces/ValidationMiddlewareType";
 import mongoose from "mongoose";
 import JobSchema from "../models/JobSchema";
 import UserSchema from "../models/UserSchema";
-import { CustomRequest } from "../interfaces/CustomRequestType";
+import { ValidationMiddleware, CustomRequest } from "../interfaces";
 import multer from "multer";
 
 // This middleware function will validate the user body request using express-validator, if there are errors we are going to throw customizing errors from customErrors that will be catch it by the errorHandlerMiddleware file
