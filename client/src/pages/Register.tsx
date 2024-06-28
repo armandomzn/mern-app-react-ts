@@ -12,7 +12,7 @@ import useDetectDarkMode from "../hooks/useDetectDarkMode";
 export const registerAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   // This will convert and array of arrays key-value pairs in object
-  // Ex -> [['name','armando']] -> {name:'armando'}
+  // Ex -> [['name','armando']] -> { name: 'armando' }
   const registerData = Object.fromEntries(formData);
   try {
     // We send the request to its corresponding endpoint
@@ -21,12 +21,14 @@ export const registerAction: ActionFunction = async ({ request }) => {
     return redirect("/login");
   } catch (error) {
     if (isAxiosError(error)) {
-      const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message
-            .map((message: string) => message)
-            .join(",")
-        : error?.response?.data.message;
-      toast.error(errorMessage, { autoClose: 5000 });
+      const errorMessage = error.response?.data?.message;
+      if (Array.isArray(errorMessage)) {
+        for (const error of errorMessage) {
+          toast.error(error, { autoClose: 5000 });
+        }
+      } else {
+        toast.error(errorMessage, { autoClose: 5000 });
+      }
     }
     return error;
   }
