@@ -220,6 +220,23 @@ const validateProfileParamId = withValidationErrors([
   }),
 ]);
 
+const validateVerifyEmail = withValidationErrors([
+  body("email")
+    .notEmpty()
+    .withMessage(" Email is required ")
+    .isEmail()
+    .withMessage(" Invalid email format ")
+    .custom(async (email, { req }) => {
+      const user = await UserSchema.findOne({ email });
+      if (!user) {
+        throw new BadRequestError(" Verification Failed ");
+      }
+    }),
+  body("verificationToken")
+    .notEmpty()
+    .withMessage(" verificationToken is required "),
+]);
+
 export {
   validateJobInput,
   validateParamId,
@@ -228,4 +245,5 @@ export {
   validateUpdateUserInput,
   validateImageSize,
   validateProfileParamId,
+  validateVerifyEmail,
 };

@@ -23,6 +23,16 @@ const UserSchema = new mongoose.Schema({
   },
   avatar: String,
   avatarPublicId: String,
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+  },
+  verified: {
+    type: Date,
+  },
 });
 
 export default mongoose.model("User", UserSchema);
