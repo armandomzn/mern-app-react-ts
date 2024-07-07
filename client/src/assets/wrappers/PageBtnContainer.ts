@@ -84,7 +84,6 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
 
   @media (max-width: 510px) {
     justify-content: center;
-    border: 2px solid red;
     .prev-btn,
     .next-btn {
       width: 100%;

@@ -34,6 +34,9 @@ const Auth = {
   logout: async () => {
     return await requests.get("auth/logout");
   },
+  verifyEmail: async (body: {}) => {
+    return await requests.post(`auth/verify-email`, body);
+  },
 };
 
 const Jobs = {

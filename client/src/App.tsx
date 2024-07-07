@@ -24,6 +24,8 @@ import { deleteJobAction } from "./pages/DeleteJob";
 import { loaderAdmin } from "./pages/Admin";
 import { deleteProfileAction, profileAction } from "./pages/Profile";
 import { statsLoader } from "./pages/Stats";
+import VerifyEmail, { verifyEmailLoader } from "./pages/VerifyEmail";
+import Success from "./pages/Success";
 
 checkDefaultTheme();
 
@@ -36,6 +38,15 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Landing />,
+      },
+      {
+        path: "success",
+        element: <Success />,
+      },
+      {
+        path: "user/verify-email",
+        element: <VerifyEmail />,
+        loader: verifyEmailLoader,
       },
       {
         path: "login",
@@ -70,6 +81,7 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
 function App() {
   return (
     <>

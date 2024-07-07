@@ -34,9 +34,7 @@ const SearchContainer = () => {
       }, 2000);
     };
   };
-  
-  console.log("searchValues -> ", search, sort, jobStatus, jobType);
-  return (
+    return (
     <Wrapper $isDarkTheme={isDarkTheme}>
       <h3>search form</h3>
       <Form className="search-form">

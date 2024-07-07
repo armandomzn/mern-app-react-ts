@@ -18,7 +18,7 @@ export const registerAction: ActionFunction = async ({ request }) => {
     // We send the request to its corresponding endpoint
     const { data }: AxiosResponse = await agent.Auth.register(registerData);
     toast.success(data?.message);
-    return redirect("/login");
+    return redirect("/success");
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = error.response?.data?.message;

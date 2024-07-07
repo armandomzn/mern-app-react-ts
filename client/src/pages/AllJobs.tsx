@@ -22,10 +22,7 @@ export const allJobsLoader: LoaderFunction = async ({ request }) => {
     const params = Object.fromEntries([
       ...new URL(request.url).searchParams.entries(),
     ]);
-    console.log("new URL -> ", [
-      ...new URL(request.url).searchParams.entries(),
-    ]);
-    console.log("params -> ", params);
+    console.log("params -> ",params)
     const { data }: AxiosResponse<PaginationProps<JobProps[]>> =
       await agent.Jobs.getAllJobs(params);
     // We send params to the container if they exist and to keep persistance in inputs from SearchContainer component when user reloads the page
