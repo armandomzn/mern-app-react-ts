@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import UserSchema from "../models/UserSchema";
 import { StatusCodes } from "http-status-codes";
 import { comparePassword, hashPassword } from "../helpers/passwordUtils";
-import { UnauthenticatedError } from "../errors/customErrors";
+import { BadRequestError, UnauthenticatedError } from "../errors/customErrors";
+import crypto from "crypto";
 import { createJWT } from "../helpers/tokenUtils";
+import { sendVerificationEmail } from "../helpers/sendVerificationEmail";
 
 const register = async (req: Request, res: Response) => {
   const userCount = await UserSchema.countDocuments();
@@ -12,8 +14,23 @@ const register = async (req: Request, res: Response) => {
   }
   const hashedPassword = await hashPassword(req.body.password);
   req.body.password = hashedPassword;
-  await UserSchema.create(req.body);
-  return res.status(StatusCodes.CREATED).json({ message: "User Created" });
+
+  // We create verificationToken to confirm the user account by mail
+  const verificationToken = crypto.randomBytes(40).toString("hex");
+  const user = await UserSchema.create({
+    ...req.body,
+    verificationToken,
+  });
+  const origin = req.headers.origin || "http://localhost:5173";
+  await sendVerificationEmail({
+    origin,
+    name: user.name,
+    email: user.email,
+    verificationToken,
+  });
+  return res.status(StatusCodes.CREATED).json({
+    message: "User Created! Please check your email to verify the account",
+  });
 };
 
 const login = async (req: Request, res: Response) => {
@@ -35,6 +52,10 @@ const login = async (req: Request, res: Response) => {
 
   if (!isPasswordValid) {
     throw new UnauthenticatedError("Invalid Credentials");
+  }
+
+  if (!user.isVerified) {
+    throw new UnauthenticatedError("Please verify your email");
   }
 
   // We create the token
@@ -60,4 +81,31 @@ const logout = (req: Request, res: Response) => {
   return res.status(StatusCodes.OK).json({ message: "User Logged Out" });
 };
 
-export { register, login, logout };
+const verifyEmail = async (req: Request, res: Response) => {
+  const {
+    verificationToken,
+    email,
+  }: {
+    verificationToken: string;
+    email: string;
+  } = req.body;
+
+  const user = await UserSchema.findOne({ email });
+
+  if (user.isVerified) {
+    throw new BadRequestError("Email Already Verified");
+  }
+
+  if (verificationToken !== user.verificationToken) {
+    throw new UnauthenticatedError("Verification Failed");
+  }
+
+  user.isVerified = true;
+  user.verified = new Date();
+  user.verificationToken = "";
+
+  await user.save();
+  return res.status(StatusCodes.OK).json({ message: "Email Verified" });
+};
+
+export { register, login, logout, verifyEmail };
