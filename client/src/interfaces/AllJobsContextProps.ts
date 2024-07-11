@@ -1,6 +1,4 @@
-import { JobProps } from "./JobProps";
-import { PaginationProps } from "./PaginationProps";
-import { SearchParamsType } from "./SearchParamsType";
+import { JobProps, PaginationProps, SearchParamsType } from ".";
 
 export interface AllJobsContextProps {
   jobs: PaginationProps<JobProps[]>;

@@ -2,7 +2,7 @@ import { AxiosResponse, isAxiosError } from "axios";
 import { LoaderFunction, redirect, useLoaderData } from "react-router-dom";
 import { agent } from "../api/agent";
 import { toast } from "react-toastify";
-import { AppStatsProps } from "../interfaces/AppStatsProps";
+import { AppStatsProps } from "../interfaces";
 import { Wrapper } from "../assets/wrappers/StatContainer";
 import StatItem from "../components/StatItem";
 import { FaSuitcase, FaUsers } from "react-icons/fa";

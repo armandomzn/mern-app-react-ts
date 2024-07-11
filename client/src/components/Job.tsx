@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 dayjs.extend(advancedFormat);
 import JobInfo from "./JobInfo";
-import { JobProps } from "../interfaces/JobProps";
+import { JobProps } from "../interfaces";
 import { FaLocationArrow } from "react-icons/fa6";
 import { FaCalendar, FaSuitcase } from "react-icons/fa";
 import { Form, Link } from "react-router-dom";

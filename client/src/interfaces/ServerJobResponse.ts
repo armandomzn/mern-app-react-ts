@@ -1,4 +1,4 @@
-import { JobProps } from "./JobProps";
+import { JobProps } from ".";
 
 export interface ServerJobResponse {
   job: JobProps;

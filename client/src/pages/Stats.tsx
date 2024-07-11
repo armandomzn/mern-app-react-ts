@@ -2,7 +2,7 @@ import { LoaderFunction, useLoaderData } from "react-router-dom";
 import { agent } from "../api/agent";
 import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
-import { StatsProps } from "../interfaces/StatsProps";
+import { StatsProps } from "../interfaces";
 import { ChartsContainer, StatsContainer } from "../components";
 
 export const statsLoader: LoaderFunction = async () => {

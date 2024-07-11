@@ -1,10 +1,12 @@
 import axios from "axios";
-import { UserPayload } from "../interfaces/UserPayloadProps";
-import { JobPostProps } from "../interfaces/JobPostProps";
-import { ServerJobResponse } from "../interfaces/ServerJobResponse";
-import { AppStatsProps } from "../interfaces/AppStatsProps";
-import { PaginationProps } from "../interfaces/PaginationProps";
-import { JobProps } from "../interfaces/JobProps";
+import {
+  JobPostProps,
+  JobProps,
+  ServerJobResponse,
+  UserPayload,
+  AppStatsProps,
+  PaginationProps,
+} from "../interfaces";
 
 // The main url is in vite.config.ts file in proxy property
 axios.defaults.baseURL = "/api/v1";
@@ -32,7 +34,7 @@ const Auth = {
     return await requests.post("auth/login", body);
   },
   logout: async () => {
-    return await requests.get("auth/logout");
+    return await requests.delete("auth/logout");
   },
   verifyEmail: async (body: {}) => {
     return await requests.post(`auth/verify-email`, body);

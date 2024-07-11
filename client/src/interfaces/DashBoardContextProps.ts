@@ -1,4 +1,4 @@
-import { UserPayload } from "./UserPayloadProps";
+import { UserPayload } from ".";
 
 export interface DashBoardContextProps {
   isDarkTheme: boolean;

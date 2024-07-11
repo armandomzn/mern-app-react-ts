@@ -9,12 +9,11 @@ import {
 } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../components";
-import { DashBoardContextProps } from "../interfaces/DashBoardContextProps";
-import { UserPayload } from "../interfaces/UserPayloadProps";
 import { agent } from "../api/agent";
 import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { checkDefaultTheme } from "../utils/checkDefaultTheme";
+import { DashBoardContextProps, UserPayload } from "../interfaces";
 
 const DashBoardContext = createContext<DashBoardContextProps | undefined>(
   undefined

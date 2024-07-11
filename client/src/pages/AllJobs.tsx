@@ -4,10 +4,12 @@ import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { JobContainer, SearchContainer } from "../components";
 import { createContext, useContext } from "react";
-import { AllJobsContextProps } from "../interfaces/AllJobsContextProps";
-import { PaginationProps } from "../interfaces/PaginationProps";
-import { JobProps } from "../interfaces/JobProps";
-import { SearchParamsType } from "../interfaces/SearchParamsType";
+import {
+  AllJobsContextProps,
+  JobProps,
+  PaginationProps,
+  SearchParamsType,
+} from "../interfaces";
 
 export const allJobsLoader: LoaderFunction = async ({ request }) => {
   try {
@@ -22,7 +24,7 @@ export const allJobsLoader: LoaderFunction = async ({ request }) => {
     const params = Object.fromEntries([
       ...new URL(request.url).searchParams.entries(),
     ]);
-    console.log("params -> ",params)
+    console.log("params -> ", params);
     const { data }: AxiosResponse<PaginationProps<JobProps[]>> =
       await agent.Jobs.getAllJobs(params);
     // We send params to the container if they exist and to keep persistance in inputs from SearchContainer component when user reloads the page

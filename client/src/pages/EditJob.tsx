@@ -10,11 +10,10 @@ import { Wrapper } from "../assets/wrappers/DashboardFormPage";
 import { useDashBoardContext } from "./DashboardLayout";
 import { AxiosResponse, isAxiosError } from "axios";
 import { toast } from "react-toastify";
-import { ServerJobResponse } from "../interfaces/ServerJobResponse";
 import { FormRow, SubmitBtn } from "../components";
-import { JobProps } from "../interfaces/JobProps";
 import FormRowSelect from "../components/FormRowSelect";
 import { JOB_STATUS, JOB_TYPE } from "../../../backend/src/helpers/constants";
+import { ServerJobResponse, JobProps } from "../interfaces";
 
 export const editJobLoader: LoaderFunction = async ({ params }) => {
   try {
