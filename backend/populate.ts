@@ -1,7 +1,6 @@
 import "dotenv/config";
 import mongoose from "mongoose";
-import UserSchema from "./src/models/UserSchema";
-import JobSchema from "./src/models/JobSchema";
+import { JobSchema, UserSchema } from "./src/models";
 import { readFile } from "fs/promises";
 
 const start = async () => {

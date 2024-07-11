@@ -5,4 +5,5 @@ export interface JwtPayload {
   userName: string;
   role: string;
   testUser?: boolean;
+  refreshToken?: string;
 }

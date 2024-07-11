@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
-import UserSchema from "../models/UserSchema";
 import { StatusCodes } from "http-status-codes";
 import { comparePassword, hashPassword } from "../helpers/passwordUtils";
 import { BadRequestError, UnauthenticatedError } from "../errors/customErrors";
 import crypto from "crypto";
 import { createJWT } from "../helpers/tokenUtils";
 import { sendVerificationEmail } from "../helpers/sendVerificationEmail";
+import { TokenSchema, UserSchema } from "../models";
+import { CustomRequest } from "../interfaces";
+import { setAuthCookies, setCookie } from "../helpers/cookieUtils";
+import { ACCESS_TOKEN_EXPIRY } from "../helpers/constants";
 
 const register = async (req: Request, res: Response) => {
   const userCount = await UserSchema.countDocuments();
@@ -58,26 +61,54 @@ const login = async (req: Request, res: Response) => {
     throw new UnauthenticatedError("Please verify your email");
   }
 
-  // We create the token
-  const token = createJWT({
+  // We create refreshToken, this will update the accessToken each time it expires
+  let newRefreshToken = crypto.randomBytes(40).toString("hex");
+  // We generate the main data for Token model
+  const userAgent = req.headers["user-agent"];
+  const ip = req.ip;
+  // The token expiration is oneDay
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
+
+  // We invalidate old tokens in Token schema
+  await TokenSchema.deleteMany({ user: user._id });
+
+  // Create token object
+  await TokenSchema.create({
+    userAgent,
+    expiresAt,
+    ip,
+    refreshToken: newRefreshToken,
+    user: user._id,
+  });
+
+  // We create the access token with duration of 5 minutes
+  const accessTokenJWT = createJWT(
+    {
+      userId: user._id,
+      userName: user.userName,
+      role: user.role,
+    },
+    ACCESS_TOKEN_EXPIRY
+  );
+
+  // We create refreshToken with duration of oneDay by default, and we pass extra parameter which is the refreshToken
+  const refreshTokenJWT = createJWT({
     userId: user._id,
     userName: user.userName,
     role: user.role,
+    refreshToken: newRefreshToken,
   });
-  // We create the cookie to store the token
-  res.cookie("token", token, {
-    httpOnly: true, //a boolean indicating whether the cookie is only to be sent over HTTP(S), and not made available to client JavaScript (true by default).
-    expires: new Date(Date.now() + 1000 * 60 * 60 * 24), // time in milliseconds, 1day
-    secure: process.env.NODE_ENV === "production",
-  });
+  // We create the cookies to store the accessToken and refreshToken
+  setAuthCookies(res, accessTokenJWT, refreshTokenJWT);
   return res.status(StatusCodes.OK).json({ message: "User Logged In" });
 };
 
-const logout = (req: Request, res: Response) => {
-  res.cookie("token", "logout", {
-    httpOnly: true,
-    expires: new Date(Date.now()),
-  });
+const logout = async (req: CustomRequest, res: Response) => {
+  await TokenSchema.deleteMany({ user: req.user.userId });
+
+  setCookie(res, "accessToken", "logout", { expires: new Date(Date.now()) });
+  setCookie(res, "refreshToken", "logout", { expires: new Date(Date.now()) });
+
   return res.status(StatusCodes.OK).json({ message: "User Logged Out" });
 };
 

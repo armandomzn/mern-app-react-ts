@@ -12,8 +12,7 @@ import {
   UnauthorizedError,
 } from "../errors/customErrors";
 import mongoose from "mongoose";
-import JobSchema from "../models/JobSchema";
-import UserSchema from "../models/UserSchema";
+import { JobSchema, UserSchema } from "../models";
 import { ValidationMiddleware, CustomRequest } from "../interfaces";
 import multer from "multer";
 

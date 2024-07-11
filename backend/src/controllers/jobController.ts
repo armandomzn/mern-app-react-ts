@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import JobSchema from "../models/JobSchema";
+import { JobSchema } from "../models";
 import mongoose from "mongoose";
 import moment from "moment";
 import {

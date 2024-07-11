@@ -31,7 +31,7 @@ cloudinary.v2.config({
 // Built-in middleware
 // We use the static middleware to load static files (in this case the images that the Profile component from client app uses to load an profile image using the multer middleware) from public folder
 app.use(express.static(path.relative(__dirname, path.join("public"))));
-app.use(cookieParser());
+app.use(cookieParser(process.env.JWT_SECRET));
 app.use(express.json());
 
 // Router middleware

@@ -1,8 +1,7 @@
 import { Response } from "express";
 import fs from "fs";
 import { CustomRequest } from "../interfaces";
-import UserSchema from "../models/UserSchema";
-import JobSchema from "../models/JobSchema";
+import { JobSchema, UserSchema } from "../models";
 import { StatusCodes } from "http-status-codes";
 import cloudinary from "cloudinary";
 

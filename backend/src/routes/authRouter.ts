@@ -10,12 +10,13 @@ import {
   validateRegisterInput,
   validateVerifyEmail,
 } from "../middleware/validationMiddleware";
+import { authenticateUser } from "../middleware/authMiddleware";
 
 const router = Router();
 
 router.route("/login").post(validateLoginInput, login);
 router.route("/register").post(validateRegisterInput, register);
-router.route("/logout").get(logout);
+router.route("/logout").delete(authenticateUser, logout);
 router.route("/verify-email").post(validateVerifyEmail, verifyEmail);
 
 export default router;
