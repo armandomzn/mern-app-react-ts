@@ -40,6 +40,12 @@ const Auth = {
   verifyEmail: async (body: {}) => {
     return await requests.post(`auth/verify-email`, body);
   },
+  forgotPassword: async (body: {}) => {
+    return await requests.post(`auth/forgot-password`, body);
+  },
+  resetPassword: async (body: {}) => {
+    return await requests.post(`auth/reset-password`, body);
+  },
 };
 
 const Jobs = {

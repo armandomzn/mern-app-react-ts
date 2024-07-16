@@ -26,6 +26,13 @@ import { deleteProfileAction, profileAction } from "./pages/Profile";
 import { statsLoader } from "./pages/Stats";
 import VerifyEmail, { verifyEmailLoader } from "./pages/VerifyEmail";
 import Success from "./pages/Success";
+import ResetPassword, {
+  resetPasswordAction,
+  resetPasswordLoader,
+} from "./components/ResetPassword";
+import ForgotPassword, {
+  forgotPasswordAction,
+} from "./components/ForgotPassword";
 import ProfileUpdatePassword, {
   profileUpdatePasswordAction,
 } from "./pages/ProfileUpdatePassword";
@@ -50,6 +57,17 @@ const router = createBrowserRouter([
         path: "user/verify-email",
         element: <VerifyEmail />,
         loader: verifyEmailLoader,
+      },
+      {
+        path: "user/reset-password",
+        element: <ResetPassword />,
+        loader: resetPasswordLoader,
+        action: resetPasswordAction,
+      },
+      {
+        path: "user/forgot-password",
+        element: <ForgotPassword />,
+        action: forgotPasswordAction,
       },
       {
         path: "login",

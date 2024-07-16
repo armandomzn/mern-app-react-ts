@@ -24,7 +24,6 @@ const FormRow = ({
         defaultValue={defaultValue || ""}
         id={name}
         className="form-input"
-        required
         onChange={handlerFunction}
       />
     </div>

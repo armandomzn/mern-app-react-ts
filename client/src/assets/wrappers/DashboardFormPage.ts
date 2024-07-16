@@ -14,6 +14,7 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
       props.$isDarkTheme ? `var(--text-color)` : "var(--primary-500)"};
     letter-spacing: 1px;
     font-size: clamp(0.875rem, 5vw, 2rem);
+    font-weight: bold;
   }
 
   .form-row {
@@ -29,6 +30,7 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
     letter-spacing: 1px;
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
+    font-weight: bold;
   }
 
   .form-input,
@@ -100,5 +102,10 @@ export const Wrapper = styled.section<{ $isDarkTheme: boolean }>`
         props.$isDarkTheme ? `var(--primary-200)` : `var(--primary-500)`};
       font-size: clamp(0.5rem, 5vw, 0.875rem);
     }
+  }
+
+  .change-password {
+    text-transform: capitalize;
+    font-size: clamp(0.5rem, 5vw, 0.84rem);
   }
 `;

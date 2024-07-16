@@ -14,6 +14,7 @@ import { authenticateUser } from "./middleware/authMiddleware";
 import path from "path";
 import cloudinary from "cloudinary";
 import cookieParser from "cookie-parser";
+import "./helpers/cronExpirationForgetPasswordToken";
 
 const app = express();
 

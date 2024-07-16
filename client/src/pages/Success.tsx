@@ -33,7 +33,7 @@ const Success = () => {
           <SuccessImage />
         </header>
         <div className="success-info">
-          <h1>mail sent successfully!</h1>
+          <h1>Email sent successfully!</h1>
           <p>Thank you! The email was sent correctly.</p>
           <p>Please confirm your account through the email we send you.</p>
           <p>Best regards,</p>

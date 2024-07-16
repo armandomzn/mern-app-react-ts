@@ -3,6 +3,7 @@ import { styled } from "styled-components";
 export const Wrapper = styled.section<{ $isDarkTheme?: boolean }>`
   min-height: 100vh;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   padding: 4rem 0;
   background: ${(props) =>
@@ -52,6 +53,8 @@ export const Wrapper = styled.section<{ $isDarkTheme?: boolean }>`
     font-size: 0.875rem;
     color: var(--text-color);
     margin-bottom: 0.5rem;
+    word-wrap: break-word;
+    hyphens: auto;
   }
   .form-input {
     padding: 0.375rem 0.75rem;
@@ -64,6 +67,12 @@ export const Wrapper = styled.section<{ $isDarkTheme?: boolean }>`
     height: 2rem;
     color: var(--text-color);
   }
+  
+  .btn {
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+
   .btn-block {
     width: 100%;
     padding: 0.5rem 1rem;
@@ -74,6 +83,8 @@ export const Wrapper = styled.section<{ $isDarkTheme?: boolean }>`
     text-align: center;
     letter-spacing: 1px;
     color: var(--text-color);
+    font-size: clamp(0.5rem, 5vw, 0.875rem);
+    margin-bottom: 0.5rem;
     a {
       color: ${(props) =>
         props.$isDarkTheme ? "var(--primary-100)" : "var(--primary-500)"};

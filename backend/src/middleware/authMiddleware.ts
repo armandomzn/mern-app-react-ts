@@ -43,6 +43,7 @@ const authenticateUser = async (
       refreshToken: payload.refreshToken,
     });
 
+    // The isValid property is overridden by the database administrator in case the token or refreshToken has been compromised.
     if (
       !existingToken ||
       !existingToken.isValid ||

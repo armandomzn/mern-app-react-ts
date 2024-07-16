@@ -237,6 +237,63 @@ const validateVerifyEmail = withValidationErrors([
     .withMessage(" verificationToken is required "),
 ]);
 
+const validateForgotPasswordInput = withValidationErrors([
+  body("email").isEmail().withMessage(" Invalid email address ").optional(),
+  body("userName")
+    .isLength({ min: 5 })
+    .withMessage(" userName min length must be of 5 ")
+    .optional(),
+  body().custom(async (_, { req }) => {
+    const { email, userName } = req.body;
+    if (!email && !userName) {
+      throw new BadRequestError(
+        `You need to provide at least email or userName`
+      );
+    }
+    return true;
+  }),
+]);
+
+const validateResetPassword = withValidationErrors([
+  body("email")
+    .notEmpty()
+    .withMessage(" Email is required ")
+    .isEmail()
+    .withMessage(" Invalid email format "),
+  body("token").notEmpty().withMessage(" token is required "),
+  body("newPassword")
+    .notEmpty()
+    .withMessage(" New password is required ")
+    .isStrongPassword({
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minSymbols: 1,
+    })
+    .withMessage(
+      " New password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
+    ),
+  body("newPasswordConfirm")
+    .notEmpty()
+    .withMessage(" New password confirm is required ")
+    .isStrongPassword({
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minSymbols: 1,
+    })
+    .withMessage(
+      " New password confirm must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
+    )
+    .custom((value, { req }) => {
+      const request = req as Request;
+      if (request.body.newPassword !== value) {
+        throw new BadRequestError(" Passwords do not match ");
+      }
+      return true;
+    }),
+]);
+
 const validateUpdateUserPasswordInput = withValidationErrors([
   body("oldPassword")
     .notEmpty()
@@ -305,5 +362,7 @@ export {
   validateImageSize,
   validateProfileParamId,
   validateVerifyEmail,
+  validateForgotPasswordInput,
+  validateResetPassword,
   validateUpdateUserPasswordInput,
 };

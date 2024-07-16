@@ -26,7 +26,7 @@ const SubmitBtn = ({
 
   return (
     <button
-      className={`btn ${optionalClassName && optionalClassName}`}
+      className={`btn ${optionalClassName || ""}`}
       disabled={status.name === nameState && isSubmitting}
       onClick={() => {
         setStatus({

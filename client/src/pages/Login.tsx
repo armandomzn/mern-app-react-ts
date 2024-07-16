@@ -10,8 +10,8 @@ import {
 import { agent } from "../api/agent";
 import { toast } from "react-toastify";
 import { AxiosResponse, isAxiosError } from "axios";
-import React, { useState } from "react";
 import useDetectDarkMode from "../hooks/useDetectDarkMode";
+import useEmailOrUsernameState from "../hooks/useEmailOrUsernameState";
 
 export const loginAction: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -35,18 +35,9 @@ export const loginAction: ActionFunction = async ({ request }) => {
 };
 
 const Login = () => {
-  const [emailOrUserName, setEmailOrUserName] = useState("email");
-  const { isDarkMode } = useDetectDarkMode();
-
   const navigate = useNavigate();
-  const handleEmailOrUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    if (emailRegex.test(e.target.value)) {
-      setEmailOrUserName("email");
-      return;
-    }
-    setEmailOrUserName("userName");
-  };
+  const { isDarkMode } = useDetectDarkMode();
+  const { emailOrUserName, handleEmailOrUsername } = useEmailOrUsernameState();
 
   const loginDemoUser = async () => {
     const user = {
@@ -77,9 +68,9 @@ const Login = () => {
         <FormRow
           textLabel="email or username"
           name={emailOrUserName}
-          type={emailOrUserName}
+          type={emailOrUserName === "email" ? "email" : "text"}
           defaultValue="john@email.com"
-          handlerFunction={handleEmailOrUsername}
+          handlerFunction={(e) => handleEmailOrUsername(e.target.value)}
         />
         <FormRow name="password" type="password" defaultValue="Secret123#" />
 
@@ -89,6 +80,10 @@ const Login = () => {
         </button>
         <p className="member">
           Not a member? <Link to="/register">register</Link>
+        </p>
+        <p className="member">
+          Forgot your password?{" "}
+          <Link to="/user/forgot-password">Reset Password</Link>
         </p>
       </Form>
     </Wrapper>

@@ -8,7 +8,12 @@ import { sendVerificationEmail } from "../helpers/sendVerificationEmail";
 import { TokenSchema, UserSchema } from "../models";
 import { CustomRequest } from "../interfaces";
 import { setAuthCookies, setCookie } from "../helpers/cookieUtils";
-import { ACCESS_TOKEN_EXPIRY } from "../helpers/constants";
+import {
+  ACCESS_TOKEN_EXPIRY,
+  PASSWORD_TEN_MINUTES_EXPIRY,
+} from "../helpers/constants";
+import { sendResetPasswordEmail } from "../helpers/sendResetPasswordEmail";
+import { sendResetSuccessPasswordEmail } from "../helpers/sendResetSuccessPasswordEmail";
 
 const register = async (req: Request, res: Response) => {
   const userCount = await UserSchema.countDocuments();
@@ -98,7 +103,7 @@ const login = async (req: Request, res: Response) => {
     role: user.role,
     refreshToken: newRefreshToken,
   });
-  // We create the cookies to store the accessToken and refreshToken
+  // We create the cookies to store the accessToken and refreshToken, the authMiddleware check for each time you want to access a resource to use the access token or refresh it by generating a new one if necessary and extend the life of the token by deleting the old one.
   setAuthCookies(res, accessTokenJWT, refreshTokenJWT);
   return res.status(StatusCodes.OK).json({ message: "User Logged In" });
 };
@@ -139,4 +144,49 @@ const verifyEmail = async (req: Request, res: Response) => {
   return res.status(StatusCodes.OK).json({ message: "Email Verified" });
 };
 
-export { register, login, logout, verifyEmail };
+const forgotPassword = async (req: Request, res: Response) => {
+  const user = await UserSchema.findOne({
+    $or: [{ email: req.body.email }, { userName: req.body.userName }],
+  });
+  // If user exist then we send the email
+  if (user) {
+    const passwordToken = crypto.randomBytes(40).toString("hex");
+    // send email to user
+    const origin = req.headers.origin || "http://localhost:5173";
+    await sendResetPasswordEmail(user.name, user.email, passwordToken, origin);
+
+    // save data in UserSchema, this way the server will know which token validate and will check for password time expiration
+    const passwordTokenExpirationDate = new Date(
+      Date.now() + PASSWORD_TEN_MINUTES_EXPIRY
+    );
+    user.passwordToken = passwordToken;
+    user.passwordTokenExpirationDate = passwordTokenExpirationDate;
+    await user.save();
+  }
+  return res
+    .status(StatusCodes.OK)
+    .json({ message: "Please check your email for reset password link" });
+};
+
+const resetPassword = async (req: Request, res: Response) => {
+  const { email, token, newPassword, newPasswordConfirm } = req.body;
+  const user = await UserSchema.findOne({ email });
+  if (user) {
+    const currentDate = new Date();
+    if (
+      user.passwordTokenExpirationDate > currentDate &&
+      user.passwordToken === token &&
+      newPassword === newPasswordConfirm
+    ) {
+      const hashedPassword = await hashPassword(newPasswordConfirm);
+      user.password = hashedPassword;
+      user.passwordToken = null;
+      user.passwordTokenExpirationDate = null;
+      await user.save();
+      await sendResetSuccessPasswordEmail(user.name, user.email);
+    }
+  }
+  return res.status(StatusCodes.OK).json({ message: "Reset Password" });
+};
+
+export { register, login, logout, verifyEmail, forgotPassword, resetPassword };
