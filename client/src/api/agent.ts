@@ -7,6 +7,7 @@ import {
   AppStatsProps,
   PaginationProps,
 } from "../interfaces";
+import { UpdateUserPasswordProps } from "../interfaces/UpdateUserPasswordProps";
 
 // The main url is in vite.config.ts file in proxy property
 axios.defaults.baseURL = "/api/v1";
@@ -74,6 +75,12 @@ const User = {
   },
   deleteProfileImage: async () => {
     return await requests.delete("user/delete-profile-image");
+  },
+  updateUserPassword: async (body: {}) => {
+    return await requests.patch<UpdateUserPasswordProps>(
+      `user/update-user-password`,
+      body
+    );
   },
 };
 

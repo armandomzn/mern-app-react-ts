@@ -26,6 +26,9 @@ import { deleteProfileAction, profileAction } from "./pages/Profile";
 import { statsLoader } from "./pages/Stats";
 import VerifyEmail, { verifyEmailLoader } from "./pages/VerifyEmail";
 import Success from "./pages/Success";
+import ProfileUpdatePassword, {
+  profileUpdatePasswordAction,
+} from "./pages/ProfileUpdatePassword";
 
 checkDefaultTheme();
 
@@ -68,6 +71,11 @@ const router = createBrowserRouter([
           { path: "all-jobs", element: <AllJobs />, loader: allJobsLoader },
           { path: "stats", element: <Stats />, loader: statsLoader },
           { path: "profile", element: <Profile />, action: profileAction },
+          {
+            path: "profile/update-password",
+            element: <ProfileUpdatePassword />,
+            action: profileUpdatePasswordAction,
+          },
           { path: "delete-profile-image", action: deleteProfileAction },
           {
             path: "edit-job/:id",

@@ -4,12 +4,17 @@ import {
   getApplicationStats,
   getCurrentUser,
   updateUser,
+  updateUserPassword,
 } from "../controllers/userController";
 import {
   validateImageSize,
   validateUpdateUserInput,
+  validateUpdateUserPasswordInput,
 } from "../middleware/validationMiddleware";
-import { authorizePermissions, checkForTestUser } from "../middleware/authMiddleware";
+import {
+  authorizePermissions,
+  checkForTestUser,
+} from "../middleware/authMiddleware";
 import { upload } from "../middleware/multerMiddleware";
 
 const router = Router();
@@ -28,5 +33,8 @@ router
     updateUser
   );
 router.route("/delete-profile-image").delete(deleteProfileImage);
+router
+  .route("/update-user-password")
+  .patch(validateUpdateUserPasswordInput, updateUserPassword);
 
 export default router;

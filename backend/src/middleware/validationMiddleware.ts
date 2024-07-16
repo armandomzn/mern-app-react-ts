@@ -9,12 +9,14 @@ import { JOB_STATUS, JOB_TYPE } from "../helpers/constants";
 import {
   BadRequestError,
   NotFoundError,
+  UnauthenticatedError,
   UnauthorizedError,
 } from "../errors/customErrors";
 import mongoose from "mongoose";
 import { JobSchema, UserSchema } from "../models";
 import { ValidationMiddleware, CustomRequest } from "../interfaces";
 import multer from "multer";
+import { comparePassword } from "../helpers/passwordUtils";
 
 // This middleware function will validate the user body request using express-validator, if there are errors we are going to throw customizing errors from customErrors that will be catch it by the errorHandlerMiddleware file
 const withValidationErrors = (
@@ -90,7 +92,6 @@ const validateRegisterInput = withValidationErrors([
     .withMessage(" Email is required ")
     .isEmail()
     .withMessage(" Invalid email format ")
-
     .custom(async (email) => {
       const user = await UserSchema.findOne({ email });
       if (user) {
@@ -236,6 +237,65 @@ const validateVerifyEmail = withValidationErrors([
     .withMessage(" verificationToken is required "),
 ]);
 
+const validateUpdateUserPasswordInput = withValidationErrors([
+  body("oldPassword")
+    .notEmpty()
+    .withMessage(" Current password is required ")
+    .custom(async (value, { req }) => {
+      const request = req as CustomRequest;
+      const user = await UserSchema.findOne({
+        _id: request.user.userId,
+      }).select("+password");
+      const isPasswordCorrect = await comparePassword(
+        value,
+        user.password.toString()
+      );
+      if (!isPasswordCorrect) {
+        throw new UnauthenticatedError("Invalid Credentials");
+      }
+    }),
+  body("newPassword")
+    .notEmpty()
+    .withMessage(" New password is required ")
+    .isStrongPassword({
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minSymbols: 1,
+    })
+    .withMessage(
+      " Password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
+    )
+    .custom(async (value, { req }) => {
+      const request = req as CustomRequest;
+      if (request.body.oldPassword === value) {
+        throw new BadRequestError(
+          " The password must not be the same as the one used for "
+        );
+      }
+      return true;
+    }),
+  body("newPasswordConfirm")
+    .notEmpty()
+    .withMessage(" New password is required ")
+    .isStrongPassword({
+      minLength: 8,
+      minLowercase: 1,
+      minUppercase: 1,
+      minSymbols: 1,
+    })
+    .withMessage(
+      " Password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
+    )
+    .custom(async (value, { req }) => {
+      const request = req as CustomRequest;
+      if (request.body.newPassword !== value) {
+        throw new BadRequestError(" Passwords do not match ");
+      }
+      return true;
+    }),
+]);
+
 export {
   validateJobInput,
   validateParamId,
@@ -245,4 +305,5 @@ export {
   validateImageSize,
   validateProfileParamId,
   validateVerifyEmail,
+  validateUpdateUserPasswordInput,
 };

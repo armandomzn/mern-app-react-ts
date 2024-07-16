@@ -1,6 +1,7 @@
 import {
   ActionFunction,
   Form,
+  Link,
   redirect,
   useOutletContext,
 } from "react-router-dom";
@@ -89,6 +90,13 @@ const Profile = () => {
         />
         {/* <FormRow name="email" defaultValue={user.email} type="email" /> */}
         <FormRow name="location" defaultValue={user.location} type="location" />
+        <Link
+          to="update-password"
+          className="btn change-password"
+          style={{ margin: "2rem 0 0 0" }}
+        >
+          change password
+        </Link>
         <SubmitBtn
           nameState={`update-profile-submit`}
           optionalButtonText="update profile"
