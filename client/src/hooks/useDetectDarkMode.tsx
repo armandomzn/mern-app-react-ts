@@ -1,11 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { checkDefaultTheme } from "../utils/checkDefaultTheme";
 
 const useDetectDarkMode = () => {
-  const [isDarkMode, setIsDarkMode] = useState(checkDefaultTheme);
-  useEffect(() => {
-    setIsDarkMode((prev) => !prev);
-  }, [isDarkMode]);
+  const [isDarkMode, _] = useState(checkDefaultTheme);
   return { isDarkMode };
 };
 export default useDetectDarkMode;
