@@ -7,7 +7,7 @@ const sendResetSuccessPasswordEmail = async (name: string, email: string) => {
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Correo Personalizado</title>
+        <title>Reset Password</title>
         <style>
         body {
             font-family: Arial, sans-serif;
