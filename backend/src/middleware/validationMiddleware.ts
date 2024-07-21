@@ -16,7 +16,7 @@ import mongoose from "mongoose";
 import { JobSchema, UserSchema } from "../models";
 import { ValidationMiddleware, CustomRequest } from "../interfaces";
 import multer from "multer";
-import { comparePassword } from "../helpers/passwordUtils";
+import { comparePassword } from "../helpers";
 
 // This middleware function will validate the user body request using express-validator, if there are errors we are going to throw customizing errors from customErrors that will be catch it by the errorHandlerMiddleware file
 const withValidationErrors = (

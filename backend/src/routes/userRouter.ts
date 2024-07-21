@@ -35,6 +35,6 @@ router
 router.route("/delete-profile-image").delete(deleteProfileImage);
 router
   .route("/update-user-password")
-  .patch(validateUpdateUserPasswordInput, updateUserPassword);
+  .patch(checkForTestUser, validateUpdateUserPasswordInput, updateUserPassword);
 
 export default router;

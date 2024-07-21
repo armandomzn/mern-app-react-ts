@@ -5,7 +5,6 @@ import {
   UnauthorizedError,
 } from "../errors/customErrors";
 import crypto from "crypto";
-import { createJWT, verifyJWT } from "../helpers/tokenUtils";
 import { JwtPayload, CustomRequest } from "../interfaces";
 import { TokenSchema } from "../models";
 
@@ -13,7 +12,7 @@ import {
   ACCESS_TOKEN_EXPIRY,
   REFRESH_TOKEN_EXPIRY_MS,
 } from "../helpers/constants";
-import { setAuthCookies } from "../helpers/cookieUtils";
+import { setAuthCookies, createJWT, verifyJWT } from "../helpers";
 
 const authenticateUser = async (
   req: CustomRequest,

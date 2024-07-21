@@ -1,4 +1,4 @@
-import { sendEmail } from "./sendEmail";
+import { sendEmail } from "../helpers";
 
 const sendResetPasswordEmail = async (
   name: string,

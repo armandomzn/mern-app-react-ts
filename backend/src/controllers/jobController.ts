@@ -10,7 +10,7 @@ import {
   QueryObjectProps,
   SortOptions,
 } from "../interfaces";
-import { Pagination } from "../helpers/Pagination";
+import { Pagination } from "../helpers";
 
 const createJob = async (req: CustomRequest, res: Response) => {
   // We add to the body request the user who is creating the actual job, this information is obtained from the token

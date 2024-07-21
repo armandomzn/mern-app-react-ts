@@ -1,19 +1,24 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { comparePassword, hashPassword } from "../helpers/passwordUtils";
 import { BadRequestError, UnauthenticatedError } from "../errors/customErrors";
 import crypto from "crypto";
-import { createJWT } from "../helpers/tokenUtils";
-import { sendVerificationEmail } from "../helpers/sendVerificationEmail";
 import { TokenSchema, UserSchema } from "../models";
 import { CustomRequest } from "../interfaces";
-import { setAuthCookies, setCookie } from "../helpers/cookieUtils";
 import {
   ACCESS_TOKEN_EXPIRY,
   PASSWORD_TEN_MINUTES_EXPIRY,
 } from "../helpers/constants";
-import { sendResetPasswordEmail } from "../helpers/sendResetPasswordEmail";
-import { sendResetSuccessPasswordEmail } from "../helpers/sendResetSuccessPasswordEmail";
+import {
+  setAuthCookies,
+  setCookie,
+  createHashToken,
+  hashPassword,
+  comparePassword,
+  sendResetPasswordEmail,
+  sendResetSuccessPasswordEmail,
+  sendVerificationEmail,
+  createJWT,
+} from "../helpers";
 
 const register = async (req: Request, res: Response) => {
   const userCount = await UserSchema.countDocuments();
@@ -159,7 +164,8 @@ const forgotPassword = async (req: Request, res: Response) => {
     const passwordTokenExpirationDate = new Date(
       Date.now() + PASSWORD_TEN_MINUTES_EXPIRY
     );
-    user.passwordToken = passwordToken;
+    // We hash the passwordToken to be stored in the database
+    user.passwordToken = createHashToken(passwordToken);
     user.passwordTokenExpirationDate = passwordTokenExpirationDate;
     await user.save();
   }
@@ -173,9 +179,10 @@ const resetPassword = async (req: Request, res: Response) => {
   const user = await UserSchema.findOne({ email });
   if (user) {
     const currentDate = new Date();
+    // We recover the email token and we hash it (from url params) to be compared against the passwordToken from the database, if they are equal then we have the correct passwordToken.
     if (
       user.passwordTokenExpirationDate > currentDate &&
-      user.passwordToken === token &&
+      user.passwordToken === createHashToken(token) &&
       newPassword === newPasswordConfirm
     ) {
       const hashedPassword = await hashPassword(newPasswordConfirm);
