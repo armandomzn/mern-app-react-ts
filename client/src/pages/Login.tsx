@@ -39,7 +39,10 @@ const Login = () => {
   const { isDarkMode } = useDetectDarkMode();
   const { emailOrUserName, handleEmailOrUsername } = useEmailOrUsernameState();
 
-  const loginDemoUser = async () => {
+  const loginDemoUser = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
     const user = {
       email: "alice.smith@example.com",
       password: "Password1!",
@@ -69,10 +72,9 @@ const Login = () => {
           textLabel="email or username"
           name={emailOrUserName}
           type={emailOrUserName === "email" ? "email" : "text"}
-          defaultValue="john@email.com"
           handlerFunction={(e) => handleEmailOrUsername(e.target.value)}
         />
-        <FormRow name="password" type="password" defaultValue="Secret123#" />
+        <FormRow name="password" type="password" />
 
         <SubmitBtn nameState={`login-submit`} optionalClassName="btn-block" />
         <button type="button" className="btn btn-block" onClick={loginDemoUser}>
