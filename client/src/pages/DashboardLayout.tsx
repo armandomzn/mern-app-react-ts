@@ -5,10 +5,11 @@ import {
   redirect,
   useLoaderData,
   useNavigate,
+  useNavigation,
   useOutletContext,
 } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/Dashboard";
-import { BigSidebar, Navbar, SmallSidebar } from "../components";
+import { BigSidebar, Loading, Navbar, SmallSidebar } from "../components";
 import { agent } from "../api/agent";
 import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
@@ -39,6 +40,8 @@ const DashboardLayout = () => {
   // We use the useLoaderData hook to get the data from loader
   // In this case we get the token from the server
   const user = useLoaderData() as UserPayload;
+  const navigation = useNavigation();
+  const isPageLoading = navigation.state === "loading";
 
   // We use navigate instead of redirect when logout because redirect only works for actions and loaders functions
   const navigate = useNavigate();
@@ -85,7 +88,11 @@ const DashboardLayout = () => {
           <div>
             <Navbar />
             <div className="dashboard-page">
-              <Outlet context={{ user, isDarkTheme } satisfies ContextType} />
+              {isPageLoading ? (
+                <Loading />
+              ) : (
+                <Outlet context={{ user, isDarkTheme } satisfies ContextType} />
+              )}
             </div>
           </div>
         </main>
