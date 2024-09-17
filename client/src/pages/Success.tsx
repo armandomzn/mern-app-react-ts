@@ -1,8 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/Success";
-import LandingNavBar from "../components/LandingNavBar";
-import SuccessImage from "../components/SuccessImage";
 import { useEffect, useState } from "react";
+import { LandingNavBar, Loading, SuccessImage } from "../components";
 
 const Success = () => {
   const location = useLocation();
@@ -18,11 +17,7 @@ const Success = () => {
   }, [location.state]);
 
   if (isLoading) {
-    return (
-      <div className="loading-parent">
-        <div className="loading"></div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
