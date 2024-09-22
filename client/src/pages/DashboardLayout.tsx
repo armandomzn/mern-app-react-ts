@@ -3,7 +3,6 @@ import {
   LoaderFunction,
   Outlet,
   redirect,
-  useLoaderData,
   useNavigate,
   useNavigation,
   useOutletContext,
@@ -12,34 +11,50 @@ import { Wrapper } from "../assets/wrappers/Dashboard";
 import { BigSidebar, Loading, Navbar, SmallSidebar } from "../components";
 import { agent } from "../api/agent";
 import { AxiosResponse } from "axios";
-import { toast } from "react-toastify";
 import { checkDefaultTheme } from "../utils/checkDefaultTheme";
 import { DashBoardContextProps, UserPayload } from "../interfaces";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import { showToast } from "../utils/showToast";
+
+const userQuery = {
+  queryKey: ["current-user"],
+  queryFn: async () => {
+    const { data }: AxiosResponse<UserPayload> =
+      await agent.User.getCurrentUser();
+    return data;
+  },
+};
+
+interface Props {
+  queryClient: QueryClient;
+}
 
 const DashBoardContext = createContext<DashBoardContextProps | undefined>(
   undefined
 );
 
 // The loaders from react router dom allow us to provide data to some route before it renders, always needs to return a value
-export const dashboardLoader: LoaderFunction = async () => {
-  // The returned data is immediately available to the component.
-  try {
-    const { data }: AxiosResponse = await agent.User.getCurrentUser();
-    return data;
-  } catch (error) {
-    return redirect("/");
-  }
-};
+export const dashboardLoader =
+  (queryClient: QueryClient): LoaderFunction =>
+  async () => {
+    // The returned data is immediately available to the component.
+    try {
+      return await queryClient.ensureQueryData(userQuery);
+    } catch (error) {
+      return redirect("/");
+    }
+  };
 
 export type ContextType = {
   user: UserPayload;
   isDarkTheme: boolean;
 };
 
-const DashboardLayout = () => {
+const DashboardLayout = ({ queryClient }: Props) => {
   // We use the useLoaderData hook to get the data from loader
   // In this case we get the token from the server
-  const user = useLoaderData() as UserPayload;
+  // const user = useQuery(userQuery).data as UserPayload;
+  const user = useQuery(userQuery).data as UserPayload;
   const navigation = useNavigation();
   const isPageLoading = navigation.state === "loading";
 
@@ -52,8 +67,10 @@ const DashboardLayout = () => {
   const logoutUser = async () => {
     // We go to main page when logout and delete the session cookie from the server when logout, this is server job
     navigate("/");
+    // We invalidate all queries stored in cache
+    await queryClient.invalidateQueries();
     const { data }: AxiosResponse = await agent.Auth.logout();
-    toast.success(data?.message);
+    showToast("logout", data?.message);
   };
   const toggleDarkTheme = () => {
     const newDarkTheme = !isDarkTheme;
