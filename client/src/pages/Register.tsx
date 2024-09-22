@@ -3,8 +3,8 @@ import { ActionFunction, Form, Link, redirect } from "react-router-dom";
 import { Wrapper } from "../assets/wrappers/RegisterAndLoginPage";
 import { FormRow, SubmitBtn } from "../components";
 import { agent } from "../api/agent";
-import { toast } from "react-toastify";
 import useDetectDarkMode from "../hooks/useDetectDarkMode";
+import { showToast } from "../utils/showToast";
 
 // With this registerAction we can use formData API to manage form inputs
 // we can handle data from the request before it is submitted even when the request has already been made
@@ -17,18 +17,12 @@ export const registerAction: ActionFunction = async ({ request }) => {
   try {
     // We send the request to its corresponding endpoint
     const { data }: AxiosResponse = await agent.Auth.register(registerData);
-    toast.success(data?.message);
+    showToast("register", data?.message);
     return redirect("/success");
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = error.response?.data?.message;
-      if (Array.isArray(errorMessage)) {
-        for (const error of errorMessage) {
-          toast.error(error, { autoClose: 5000 });
-        }
-      } else {
-        toast.error(errorMessage, { autoClose: 5000 });
-      }
+      showToast("register-error", errorMessage, "error");
     }
     return error;
   }
@@ -41,17 +35,12 @@ const Register = () => {
       <Form method="POST" className="form">
         <h1 className="logo">mern app</h1>
         <h4>register</h4>
-        <FormRow name="name" type="text" defaultValue="john" />
-        <FormRow
-          name="lastName"
-          type="text"
-          defaultValue="doe"
-          textLabel="last name"
-        />
-        <FormRow name="userName" type="text" defaultValue="johndoe" />
+        <FormRow name="name" type="text" />
+        <FormRow name="lastName" type="text" textLabel="last name" />
+        <FormRow name="userName" type="text" />
         <FormRow name="location" type="text" defaultValue="earth" />
-        <FormRow name="email" type="email" defaultValue="john@email.com" />
-        <FormRow name="password" type="password" defaultValue="Secret123#" />
+        <FormRow name="email" type="email" />
+        <FormRow name="password" type="password" />
         <SubmitBtn
           nameState={`register-submit`}
           optionalClassName="btn-block"
