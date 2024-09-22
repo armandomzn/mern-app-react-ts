@@ -5,12 +5,12 @@ import {
   LoaderFunction,
   redirect,
 } from "react-router-dom";
-import { toast } from "react-toastify";
 import useDetectDarkMode from "../hooks/useDetectDarkMode";
 import { Wrapper } from "../assets/wrappers/ResetForgotPassword";
 import { FormRow, SubmitBtn } from ".";
 import LandingNavBar from "./LandingNavBar";
 import { agent } from "../api/agent";
+import { showToast } from "../utils/showToast";
 
 export const resetPasswordLoader: LoaderFunction = async ({ request }) => {
   const params = Object.fromEntries([
@@ -24,16 +24,10 @@ export const resetPasswordLoader: LoaderFunction = async ({ request }) => {
     return true;
   } catch (error) {
     if (isAxiosError(error)) {
-      const errorMessage = error.response?.data?.message;
-      if (Array.isArray(errorMessage)) {
-        for (const error of errorMessage) {
-          toast.error(error, { autoClose: 5000 });
-        }
-      } else {
-        toast.error(errorMessage, { autoClose: 5000 });
-      }
+      const errorMessage: string | string[] = error.response?.data?.message;
+      showToast("reset-password-loader-error", errorMessage, "error");
     } else if (error instanceof Error) {
-      toast.error(error.message, { autoClose: 5000 });
+      showToast("reset-password-loader-general-error", error.message, "error");
     }
     return redirect("/login");
   }
@@ -50,18 +44,12 @@ export const resetPasswordAction: ActionFunction = async ({ request }) => {
       ...params,
       ...resetPasswordData,
     });
-    toast.success(data?.message, { autoClose: 5000 });
+    showToast("reset-password", data?.success);
     return redirect("/login");
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = error.response?.data?.message;
-      if (Array.isArray(errorMessage)) {
-        for (const error of errorMessage) {
-          toast.error(error, { autoClose: 5000 });
-        }
-      } else {
-        toast.error(errorMessage, { autoClose: 5000 });
-      }
+      showToast("reset-password-error", errorMessage, "error");
     }
     return error;
   }
