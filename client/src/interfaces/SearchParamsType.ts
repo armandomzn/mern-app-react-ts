@@ -3,4 +3,5 @@ export type SearchParamsType = {
   jobStatus?: string;
   jobType?: string;
   sort?: string;
+  page?: string;
 };
