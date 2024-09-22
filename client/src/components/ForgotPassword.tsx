@@ -7,7 +7,7 @@ import SubmitBtn from "./SubmitBtn";
 import useDetectDarkMode from "../hooks/useDetectDarkMode";
 import { agent } from "../api/agent";
 import { AxiosResponse, isAxiosError } from "axios";
-import { toast } from "react-toastify";
+import { showToast } from "../utils/showToast";
 
 export const forgotPasswordAction: ActionFunction = async ({ request }) => {
   try {
@@ -16,18 +16,12 @@ export const forgotPasswordAction: ActionFunction = async ({ request }) => {
     const { data }: AxiosResponse = await agent.Auth.forgotPassword(
       forgotPasswordData
     );
-    toast.success(data?.message, { autoClose: 10000 });
+    showToast("forgot-password", data?.message, "success", 10000);
     return redirect("/login");
   } catch (error) {
     if (isAxiosError(error)) {
       const errorMessage = error?.response?.data?.message;
-      if (Array.isArray(errorMessage)) {
-        for (const error of errorMessage) {
-          toast.error(error, { autoClose: 5000 });
-        }
-      } else {
-        toast.error(errorMessage, { autoClose: 5000 });
-      }
+      showToast("forgot-password-error", errorMessage, "error");
     }
     return error;
   }
