@@ -34,7 +34,8 @@ const SearchContainer = () => {
       }, 2000);
     };
   };
-    return (
+  
+  return (
     <Wrapper $isDarkTheme={isDarkTheme}>
       <h3>search form</h3>
       <Form className="search-form">
