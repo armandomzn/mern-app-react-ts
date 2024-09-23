@@ -6,6 +6,7 @@ import {
   UserPayload,
   AppStatsProps,
   PaginationProps,
+  StatsProps,
 } from "../interfaces";
 import { UpdateUserPasswordProps } from "../interfaces/UpdateUserPasswordProps";
 
@@ -65,7 +66,7 @@ const Jobs = {
     return await requests.delete(`/jobs/${id}`);
   },
   getJobStats: async () => {
-    return await requests.get("/jobs/stats");
+    return await requests.get<StatsProps>("/jobs/stats");
   },
 };
 
