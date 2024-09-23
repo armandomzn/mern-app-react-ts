@@ -5,12 +5,12 @@ import {
   redirect,
   useLoaderData,
 } from "react-router-dom";
-import { toast } from "react-toastify";
 import { agent } from "../api/agent";
 import LandingNavBar from "../components/LandingNavBar";
 import { Wrapper } from "../assets/wrappers/VerifyEmail";
 import useDetectDarkMode from "../hooks/useDetectDarkMode";
 import VerifyEmailImage from "../components/VerifyEmailImage";
+import { showToast } from "../utils/showToast";
 
 export const verifyEmailLoader: LoaderFunction = async ({ request }) => {
   try {
@@ -23,21 +23,15 @@ export const verifyEmailLoader: LoaderFunction = async ({ request }) => {
     };
   } catch (error) {
     if (isAxiosError(error)) {
-      const errorMessage = error?.response?.data?.message;
-      if (Array.isArray(errorMessage)) {
-        for (const error of errorMessage) {
-          toast.error(error, { autoClose: 5000 });
-        }
-      } else {
-        toast.error(errorMessage, { autoClose: 5000 });
-      }
+      const errorMessage: string | string[] = error?.response?.data?.message;
+      showToast("verify-email-error", errorMessage, "error");
     }
     return redirect("/login");
   }
 };
 
 const VerifyEmail = () => {
-  const { message } = useLoaderData() as { message: string } || 'testing';
+  const { message } = (useLoaderData() as { message: string }) || "testing";
   const { isDarkMode } = useDetectDarkMode();
   return (
     <Wrapper $isDarkTheme={isDarkMode}>
