@@ -8,31 +8,31 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { agent } from "../api/agent";
-import { toast } from "react-toastify";
 import { AxiosResponse, isAxiosError } from "axios";
 import useDetectDarkMode from "../hooks/useDetectDarkMode";
 import useEmailOrUsernameState from "../hooks/useEmailOrUsernameState";
+import { QueryClient } from "@tanstack/react-query";
+import { showToast } from "../utils/showToast";
 
-export const loginAction: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const loginForm = Object.fromEntries(formData);
+export const loginAction =
+  (queryClient: QueryClient): ActionFunction =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const loginForm = Object.fromEntries(formData);
 
-  try {
-    const { data }: AxiosResponse = await agent.Auth.login(loginForm);
-    toast.success(data?.message);
-    return redirect("/dashboard");
-  } catch (error) {
-    if (isAxiosError(error)) {
-      console.log(error);
-
-      const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message[0]
-        : error?.response?.data.message;
-      toast.error(errorMessage, { autoClose: 5000 });
+    try {
+      const { data }: AxiosResponse = await agent.Auth.login(loginForm);
+      await queryClient.invalidateQueries();
+      showToast("login-success", data?.message);
+      return redirect("/dashboard");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage: string | string[] = error?.response?.data?.message;
+        showToast("login-error", errorMessage, "error");
+      }
+      return error;
     }
-    return error;
-  }
-};
+  };
 
 const Login = () => {
   const navigate = useNavigate();
@@ -49,16 +49,12 @@ const Login = () => {
     };
     try {
       await agent.Auth.login(user);
-      toast.success("Testing User");
+      showToast("login-success", "Testing User");
       navigate("/dashboard");
     } catch (error) {
       if (isAxiosError(error)) {
-        const errorMessage = Array.isArray(error?.response?.data?.message)
-          ? error?.response?.data.message
-              .map((message: string) => message)
-              .join(",")
-          : error?.response?.data.message;
-        toast.error(errorMessage, { autoClose: 5000 });
+        const errorMessage: string | string[] = error?.response?.data?.message;
+        showToast("login-error", errorMessage, "error");
       }
       return error;
     }
