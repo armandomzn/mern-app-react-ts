@@ -14,7 +14,7 @@ const JobContainer = () => {
     return (
       <Wrapper $isDarkTheme={isDarkTheme}>
         <div className="not-found">
-          <p>jobs not created</p>
+          <p>jobs not created or not matching your search</p>
         </div>
       </Wrapper>
     );
