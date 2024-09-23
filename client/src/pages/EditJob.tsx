@@ -9,56 +9,80 @@ import { agent } from "../api/agent";
 import { Wrapper } from "../assets/wrappers/DashboardFormPage";
 import { useDashBoardContext } from "./DashboardLayout";
 import { AxiosResponse, isAxiosError } from "axios";
-import { toast } from "react-toastify";
 import { FormRow, SubmitBtn } from "../components";
 import FormRowSelect from "../components/FormRowSelect";
 import { JOB_STATUS, JOB_TYPE } from "../../../backend/src/helpers/constants";
-import { ServerJobResponse, JobProps } from "../interfaces";
+import { ServerJobResponse } from "../interfaces";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import { showToast } from "../utils/showToast";
 
-export const editJobLoader: LoaderFunction = async ({ params }) => {
-  try {
-    const { id } = params;
-    const {
-      data: { job },
-    }: AxiosResponse<ServerJobResponse> = await agent.Jobs.getJob(id as string);
-    return job;
-  } catch (error) {
-    if (isAxiosError(error)) {
-      const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message[0]
-        : error?.response?.data.message;
-      toast.error(errorMessage, { autoClose: 5000 });
-    }
-    return redirect("/dashboard/all-jobs");
-  }
+const singleJobQuery = (id: string) => {
+  return {
+    queryKey: ["job", id],
+    queryFn: async () => {
+      const {
+        data: { job },
+      }: AxiosResponse<ServerJobResponse> = await agent.Jobs.getJob(
+        id as string
+      );
+      return job;
+    },
+  };
 };
-export const editJobAction: ActionFunction = async ({ request, params }) => {
-  try {
-    const { id } = params;
-    const formData = await request.formData();
-    const editForm = Object.fromEntries(formData);
-    const { data }: AxiosResponse = await agent.Jobs.updateJob(
-      id as string,
-      editForm
-    );
-    toast.success(data?.message);
-    return redirect("/dashboard/all-jobs");
-  } catch (error) {
-    if (isAxiosError(error)) {
-      const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message
-            .map((message: string) => message)
-            .join(",")
-        : error?.response?.data.message;
-      toast.error(errorMessage, { autoClose: 5000 });
+
+export const editJobLoader =
+  (queryClient: QueryClient): LoaderFunction =>
+  async ({ params }) => {
+    try {
+      const { id } = params;
+      await queryClient.ensureQueryData(singleJobQuery(id as string));
+      return id;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage: string | string[] = error?.response?.data?.message;
+        showToast("edit-job-loader-error", errorMessage, "error");
+      }
+      return redirect("/dashboard/all-jobs");
     }
-    return error;
-  }
-};
+  };
+export const editJobAction =
+  (queryClient: QueryClient): ActionFunction =>
+  async ({ request, params }) => {
+    try {
+      const { id } = params;
+      const formData = await request.formData();
+      const editForm = Object.fromEntries(formData);
+      const { data }: AxiosResponse = await agent.Jobs.updateJob(
+        id as string,
+        editForm
+      );
+      await queryClient.invalidateQueries({ queryKey: ["jobs"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["job", id],
+      });
+      showToast("edit-job", data?.message);
+      return redirect("/dashboard/all-jobs");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage: string | string[] = error?.response?.data?.message;
+        showToast("edit-job-error", errorMessage, "error");
+      }
+      return error;
+    }
+  };
 
 const EditJob = () => {
-  const { position, jobLocation, jobType, company, jobStatus } =
-    useLoaderData() as JobProps;
+  const id = useLoaderData() as string;
+  const {
+    data = {
+      position: "",
+      jobLocation: "",
+      jobType: "",
+      company: "",
+      jobStatus: "",
+    },
+  } = useQuery(singleJobQuery(id));
+  const { position, jobLocation, jobType, company, jobStatus } = data;
   const { isDarkTheme } = useDashBoardContext();
   return (
     <Form method="PATCH">
