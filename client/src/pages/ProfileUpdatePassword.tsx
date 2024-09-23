@@ -9,7 +9,7 @@ import { ContextType } from "./DashboardLayout";
 import { FormRow, SubmitBtn } from "../components";
 import { AxiosResponse, isAxiosError } from "axios";
 import { agent } from "../api/agent";
-import { toast } from "react-toastify";
+import { showToast } from "../utils/showToast";
 
 export const profileUpdatePasswordAction: ActionFunction = async ({
   request,
@@ -20,18 +20,12 @@ export const profileUpdatePasswordAction: ActionFunction = async ({
     const { data }: AxiosResponse = await agent.User.updateUserPassword(
       profileUpdatePasswordForm
     );
-    toast.success(data?.message, { autoClose: 5000 });
+    showToast("profile-update-password", data?.message);
     return redirect("/dashboard/profile");
   } catch (error) {
     if (isAxiosError(error)) {
-      const errorMessage = error?.response?.data?.message;
-      if (Array.isArray(errorMessage)) {
-        for (const error of errorMessage) {
-          toast.error(error, { autoClose: 5000 });
-        }
-      } else {
-        toast.error(errorMessage, { autoClose: 5000 });
-      }
+      const errorMessage: string | string[] = error?.response?.data?.message;
+      showToast("profile-update-password-error", errorMessage, "error");
     }
     return error;
   }
