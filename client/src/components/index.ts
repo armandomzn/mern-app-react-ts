@@ -12,6 +12,7 @@ import StatsContainer from "./StatsContainer";
 import LandingNavBar from "./LandingNavBar";
 import Loading from "./Loading";
 import SuccessImage from "./SuccessImage";
+import ErrorElement from "./ErrorElement";
 
 export {
   FormRow,
@@ -28,4 +29,5 @@ export {
   LandingNavBar,
   Loading,
   SuccessImage,
+  ErrorElement,
 };
