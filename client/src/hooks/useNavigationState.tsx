@@ -6,6 +6,7 @@ const useNavigationState = () => {
     isSubmitting: navigation.state === "submitting",
     isIdle: navigation.state === "idle",
     isLoading: navigation.state === "loading",
+    formAction: navigation.formAction,
   };
 };
 export default useNavigationState;
