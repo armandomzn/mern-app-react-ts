@@ -7,6 +7,7 @@ interface Props {
   optionalMiniSpinnerColor?: string;
   optionalClassName?: string;
   optionalButtonText?: string;
+  currentFormAction?: string;
 }
 
 const SubmitBtn = ({
@@ -14,27 +15,34 @@ const SubmitBtn = ({
   optionalMiniSpinnerColor,
   optionalClassName,
   optionalButtonText,
+  currentFormAction,
 }: Props) => {
-  const { isSubmitting, isLoading } = useNavigationState();
-  const [status, setStatus] = useState({ name: "" });
+  const { isSubmitting, isLoading, formAction } = useNavigationState();
+  const [status, setStatus] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     return () => {
-      setStatus({ name: "" });
+      setStatus({});
     };
   }, [isLoading]);
+  const isCurrentFormSubmitting = currentFormAction
+    ? formAction === currentFormAction && isSubmitting
+    : isSubmitting;
 
   return (
     <button
       className={`btn ${optionalClassName || ""}`}
-      disabled={status.name === nameState && isSubmitting}
+      disabled={status[nameState] && isCurrentFormSubmitting}
       onClick={() => {
-        setStatus({
-          name: nameState,
+        setStatus((prev) => {
+          return {
+            ...prev,
+            [nameState]: true,
+          };
         });
       }}
     >
-      {status.name === nameState && isSubmitting ? (
+      {status[nameState] && isCurrentFormSubmitting ? (
         <MiniSpinner color={optionalMiniSpinnerColor} />
       ) : (
         optionalButtonText || "submit"
