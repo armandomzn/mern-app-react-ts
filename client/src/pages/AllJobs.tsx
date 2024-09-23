@@ -1,7 +1,6 @@
 import { LoaderFunction, useLoaderData } from "react-router-dom";
 import { agent } from "../api/agent";
 import { AxiosResponse, isAxiosError } from "axios";
-import { toast } from "react-toastify";
 import { JobContainer, SearchContainer } from "../components";
 import { createContext, useContext } from "react";
 import {
@@ -10,40 +9,58 @@ import {
   PaginationProps,
   SearchParamsType,
 } from "../interfaces";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import { showToast } from "../utils/showToast";
 
-export const allJobsLoader: LoaderFunction = async ({ request }) => {
-  try {
-    // We extract from request.url the query params through the URL api
-    // From array we create an object with fromEntries method
-    // [
-    //   ["search", ""],
-    //   ["jobStatus", "pending"],
-    //   ["jobType", "full-time"],
-    //   ["sort", "oldest"],
-    // ];
-    const params = Object.fromEntries([
-      ...new URL(request.url).searchParams.entries(),
-    ]);
-    console.log("params -> ", params);
-    const { data }: AxiosResponse<PaginationProps<JobProps[]>> =
-      await agent.Jobs.getAllJobs(params);
-    // We send params to the container if they exist and to keep persistance in inputs from SearchContainer component when user reloads the page
-    return {
-      jobs: data,
-      searchValues: { ...params },
-    };
-  } catch (error) {
-    if (isAxiosError(error)) {
-      const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message
-            .map((message: string) => message)
-            .join(",")
-        : error?.response?.data.message;
-      toast.error(errorMessage, { autoClose: 5000 });
-    }
-    return error;
-  }
+const allJobsQuery = (params: SearchParamsType) => {
+  const { search, sort, jobStatus, jobType, page } = params;
+  return {
+    queryKey: [
+      "jobs",
+      {
+        search: search ?? "",
+        sort: sort ?? "newest",
+        jobStatus: jobStatus ?? "all",
+        jobType: jobType ?? "all",
+        page: page ?? "1",
+      },
+    ],
+    queryFn: async () => {
+      const { data }: AxiosResponse<PaginationProps<JobProps[]>> =
+        await agent.Jobs.getAllJobs(params);
+      return data;
+    },
+  };
 };
+
+export const allJobsLoader =
+  (queryClient: QueryClient): LoaderFunction =>
+  async ({ request }) => {
+    try {
+      // We extract from request.url the query params through the URL api
+      // From array we create an object with fromEntries method
+      // [
+      //   ["search", ""],
+      //   ["jobStatus", "pending"],
+      //   ["jobType", "full-time"],
+      //   ["sort", "oldest"],
+      // ];
+      const params = Object.fromEntries([
+        ...new URL(request.url).searchParams.entries(),
+      ]);
+      // We send params to the container if they exist and to keep persistance in inputs from SearchContainer component when user reloads the page
+      await queryClient.ensureQueryData(allJobsQuery(params));
+      return {
+        searchValues: { ...params },
+      };
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage: string | string[] = error?.response?.data?.message;
+        showToast("all-jobs-error", errorMessage, "error");
+      }
+      return error;
+    }
+  };
 
 const AllJobsContext = createContext<undefined | AllJobsContextProps>(
   undefined
@@ -58,11 +75,17 @@ export const useAllJobsContext = () => {
 };
 
 const AllJobs = () => {
-  const { jobs, searchValues } = useLoaderData() as {
-    jobs: PaginationProps<JobProps[]>;
+  const { searchValues } = useLoaderData() as {
     searchValues: SearchParamsType;
   };
-  console.log(jobs, searchValues);
+  let { data } = useQuery(allJobsQuery(searchValues));
+  const jobs = data || {
+    PageIndex: 0,
+    PageSize: 0,
+    Count: 0,
+    Data: [],
+  };
+  console.log("searchValues -> ", searchValues);
   return (
     <AllJobsContext.Provider value={{ jobs, searchValues }}>
       <SearchContainer />
