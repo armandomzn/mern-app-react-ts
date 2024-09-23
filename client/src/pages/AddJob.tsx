@@ -6,27 +6,32 @@ import FormRowSelect from "../components/FormRowSelect";
 import { JOB_STATUS, JOB_TYPE } from "../../../backend/src/helpers/constants";
 import { AxiosResponse, isAxiosError } from "axios";
 import { agent } from "../api/agent";
-import { toast } from "react-toastify";
+import { QueryClient } from "@tanstack/react-query";
+import { showToast } from "../utils/showToast";
 
-export const addJobAction: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const addJobForm = Object.fromEntries(formData);
-  try {
-    const { data }: AxiosResponse = await agent.Jobs.createJob(addJobForm);
-    toast.success(data.message);
-    return redirect("/dashboard/all-jobs");
-  } catch (error) {
-    if (isAxiosError(error)) {
-      const errorMessage = Array.isArray(error?.response?.data?.message)
-        ? error?.response?.data.message
-            .map((message: string) => message)
-            .join(",")
-        : error?.response?.data.message;
-      toast.error(errorMessage, { autoClose: 5000 });
+export const addJobAction =
+  (queryClient: QueryClient): ActionFunction =>
+  async ({ request }) => {
+    const formData = await request.formData();
+    const addJobForm = Object.fromEntries(formData);
+    try {
+      const { data }: AxiosResponse = await agent.Jobs.createJob(addJobForm);
+      await queryClient.invalidateQueries({
+        queryKey: ["stats"],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["jobs"],
+      });
+      showToast("add-job", data?.message);
+      return redirect("/dashboard/all-jobs");
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage: string | string[] = error?.response?.data?.message;
+        showToast("add-job-error", errorMessage, "error");
+      }
+      return error;
     }
-    return error;
-  }
-};
+  };
 const AddJob = () => {
   const { user, isDarkTheme } = useUser();
   return (
