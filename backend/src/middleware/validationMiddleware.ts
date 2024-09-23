@@ -139,34 +139,6 @@ const validateUpdateUserInput = withValidationErrors([
   body("name").notEmpty().withMessage(" Name is required "),
   body("lastName").notEmpty().withMessage(" LastName is required "),
   body("location").notEmpty().withMessage(" Location is required "),
-  // body("email")
-  //   .notEmpty()
-  //   .withMessage(" Email is required ")
-  //   .isEmail()
-  //   .withMessage(" Invalid email format ")
-  //   .custom(async (email, { req }) => {
-  //     const user = await UserSchema.findOne({ email });
-  //     const request = req as CustomRequest;
-  //     // We check if the email exist and the current user is different to the owner of email if is the case then the current user is not the owner of the email
-  //     if (user && request.user.userId.toString() !== user._id.toString()) {
-  //       throw new BadRequestError(" Email already exist ");
-  //     }
-  //   }),
-  // body("userName")
-  //   .notEmpty()
-  //   .withMessage(" userName is required ")
-  //   .isLength({ min: 5 })
-  //   .withMessage(" userName must be at least 5 characters long ")
-  //   .isLowercase()
-  //   .withMessage(" userName must be lowercase ")
-  //   .custom(async (userName, { req }) => {
-  //     const user = await UserSchema.findOne({ userName });
-  //     const request = req as CustomRequest;
-  //     // We check if the userName exist and the current user is different to the owner of userName if is the case then the current user is not the owner of the userName
-  //     if (user && request.user.userId.toString() !== user._id.toString()) {
-  //       throw new BadRequestError(" userName already exist ");
-  //     }
-  //   }),
   body("avatar")
     .optional()
     .custom((value, { req }) => {
