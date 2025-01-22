@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import { IUser, USER_ROLE_ENUM } from "../interfaces";
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema<IUser>({
   name: String,
   lastName: {
     type: String,
@@ -18,8 +19,8 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["admin", "user"],
-    default: "user",
+    enum: Object.values(USER_ROLE_ENUM),
+    default: USER_ROLE_ENUM.USER,
   },
   avatar: String,
   avatarPublicId: String,
@@ -41,4 +42,4 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.model("User", UserSchema);
+export default mongoose.model<IUser>("User", UserSchema);
