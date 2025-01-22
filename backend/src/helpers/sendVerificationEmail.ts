@@ -111,7 +111,7 @@ const sendVerificationEmail = async ({
           <p>Hello, ${name}</p>
           <p>
             Please confirm your email by clicking on the following link:
-            <a href="${verifyEmailLink}" class="verify-email">verify email</a>
+            <a href="${verifyEmailLink}" class="verify-email">Verify Email</a>
           </p>
           <p>Best regards,</p>
           <div class="user-container">
