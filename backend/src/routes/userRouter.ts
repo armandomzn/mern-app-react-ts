@@ -7,6 +7,7 @@ import {
   updateUserPassword,
 } from "../controllers/userController";
 import {
+  validateImage,
   validateImageSize,
   validateUpdateUserInput,
   validateUpdateUserPasswordInput,
@@ -28,6 +29,7 @@ router
   .patch(
     upload.single("avatar"),
     validateImageSize,
+    validateImage("avatar", true),
     checkForTestUser,
     validateUpdateUserInput,
     updateUser
