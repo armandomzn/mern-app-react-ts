@@ -1,8 +1,8 @@
+import moment from "moment";
+import mongoose from "mongoose";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { JobSchema } from "../models";
-import mongoose from "mongoose";
-import moment from "moment";
 import {
   CustomRequest,
   StatProps,
@@ -22,7 +22,7 @@ const createJob = async (req: CustomRequest, res: Response) => {
 };
 
 const getJob = async (req: Request, res: Response) => {
-  // if the req.params.id does not exist this will be managed by express-validator middleware, by validateParamId custom middleware in his corresponding route
+  // if the req.params.id does not exist this will be managed by express-validator middleware, by validateParamId custom middleware in its corresponding route
   const job = await JobSchema.findById({ _id: req.params.id });
   return res.status(StatusCodes.OK).json({ job });
 };
@@ -98,7 +98,6 @@ const getAllJobs = async (req: CustomRequest, res: Response) => {
     .sort(sortKey)
     .skip(skipPages)
     .limit(Number(limit) || 6);
-  // const numOfPages = Math.ceil(totalJobs / (Number(limit) || 6));
   const pagination = new Pagination(
     Number(page),
     Number(limit),
