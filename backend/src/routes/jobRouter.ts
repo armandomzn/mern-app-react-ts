@@ -9,7 +9,7 @@ import {
 } from "../controllers/jobController";
 import {
   validateJobInput,
-  validateParamId,
+  validateJobIdParam,
 } from "../middleware/validationMiddleware";
 import { checkForTestUser } from "../middleware/authMiddleware";
 
@@ -22,8 +22,8 @@ router
 router.route("/stats").get(showStats);
 router
   .route("/:id")
-  .get(validateParamId, getJob)
-  .delete(checkForTestUser, validateParamId, deleteJob)
-  .patch(checkForTestUser, validateParamId, validateJobInput, updateJob);
+  .get(validateJobIdParam, getJob)
+  .delete(checkForTestUser, validateJobIdParam, deleteJob)
+  .patch(checkForTestUser, validateJobIdParam, validateJobInput, updateJob);
 
 export default router;
