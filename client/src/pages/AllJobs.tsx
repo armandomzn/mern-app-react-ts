@@ -85,7 +85,6 @@ const AllJobs = () => {
     Count: 0,
     Data: [],
   };
-  console.log("searchValues -> ", searchValues);
   return (
     <AllJobsContext.Provider value={{ jobs, searchValues }}>
       <SearchContainer />
