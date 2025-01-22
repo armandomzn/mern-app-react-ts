@@ -1,3 +1,5 @@
+import { useRef } from "react";
+import { AxiosResponse, isAxiosError } from "axios";
 import {
   ActionFunction,
   Form,
@@ -9,11 +11,9 @@ import {
 import { Wrapper } from "../assets/wrappers/DashboardFormPage";
 import { ContextType } from "./DashboardLayout";
 import { FormRow, SubmitBtn } from "../components";
-import { AxiosResponse, isAxiosError } from "axios";
 import { agent } from "../api/agent";
 import { QueryClient } from "@tanstack/react-query";
 import { showToast } from "../utils/showToast";
-import { useRef } from "react";
 
 export const profileAction =
   (queryClient: QueryClient): ActionFunction =>
@@ -113,7 +113,6 @@ const Profile = () => {
           type="text"
           textLabel="last name"
         />
-        <FormRow name="email" defaultValue={user.email} type="email" />
         <FormRow name="location" defaultValue={user.location} type="location" />
         <Link
           to="update-password"
