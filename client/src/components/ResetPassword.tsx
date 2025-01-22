@@ -44,7 +44,7 @@ export const resetPasswordAction: ActionFunction = async ({ request }) => {
       ...params,
       ...resetPasswordData,
     });
-    showToast("reset-password", data?.success);
+    showToast("reset-password", data?.message);
     return redirect("/login");
   } catch (error) {
     if (isAxiosError(error)) {
