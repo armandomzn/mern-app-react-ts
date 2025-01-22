@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import { TokenDocument } from "../interfaces";
 
-const TokenSchema = new mongoose.Schema(
+const TokenSchema = new mongoose.Schema<TokenDocument>(
   {
     userAgent: {
       type: String,
@@ -23,7 +24,7 @@ const TokenSchema = new mongoose.Schema(
       default: true,
     },
     user: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -31,4 +32,5 @@ const TokenSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Token", TokenSchema);
+const TokenModel = mongoose.model<TokenDocument>("Token", TokenSchema);
+export default TokenModel;
