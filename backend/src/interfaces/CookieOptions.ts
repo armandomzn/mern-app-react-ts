@@ -4,4 +4,5 @@ export interface CookieOptions {
   expires?: Date;
   secure?: boolean;
   signed?: boolean;
+  sameSite?: boolean;
 }
