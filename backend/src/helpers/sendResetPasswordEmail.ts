@@ -123,7 +123,6 @@ const sendResetPasswordEmail = async (
             <p>Best regards,</p>
             <div class="user-container">
             <p class="issuer-name">MERN App Jobs</p>
-            <p class="issuer-email">mernappjobs@outlook.com</p>
             </div>
         </div>
         <div class="footer">
