@@ -1,22 +1,26 @@
+import multer from "multer";
+import mongoose from "mongoose";
 import { Errback, NextFunction, Request, Response } from "express";
+import { JobSchema, UserSchema } from "../models";
+import { ValidationMiddleware, CustomRequest } from "../interfaces";
 import {
   ValidationChain,
   body,
   param,
   validationResult,
 } from "express-validator";
-import { JOB_STATUS, JOB_TYPE } from "../helpers/constants";
 import {
   BadRequestError,
   NotFoundError,
   UnauthenticatedError,
   UnauthorizedError,
 } from "../errors/customErrors";
-import mongoose from "mongoose";
-import { JobSchema, UserSchema } from "../models";
-import { ValidationMiddleware, CustomRequest } from "../interfaces";
-import multer from "multer";
-import { comparePassword } from "../helpers";
+import {
+  comparePassword,
+  VALIDATION_MESSAGES,
+  JOB_STATUS,
+  JOB_TYPE,
+} from "../helpers";
 
 // This middleware function will validate the user body request using express-validator, if there are errors we are going to throw customizing errors from customErrors that will be catch it by the errorHandlerMiddleware file
 const withValidationErrors = (
@@ -28,131 +32,223 @@ const withValidationErrors = (
     (req: Request, res: Response, next: NextFunction) => {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        const errorMessages: string[] = errors.array().map((err) => err.msg);
-        // When we search id that does not exist we throw by default BadRequestError that's why in this line we search if message startsWith, then we throw the corresponding not found error
-        if (errorMessages[0].startsWith("no job")) {
-          throw new NotFoundError("", errorMessages);
+        let errorType: string;
+        const errorMessages = errors.array().map((err) => {
+          if (err.msg.errorType) {
+            errorType = err.msg.errorType;
+          }
+          const message = err.msg?.message || err.msg;
+          return message;
+        });
+        // The default error message is BadRequest, but other types of errors are thrown if necessary.
+        if (errorType) {
+          delete errorMessages[0].errorType;
         }
-        if (errorMessages[0].startsWith("not authorized")) {
-          throw new UnauthorizedError("", errorMessages);
+        if (errorType && errorType === "UnauthorizedError") {
+          return next(new UnauthorizedError("", errorMessages));
         }
-        throw new BadRequestError("", errorMessages);
+        if (errorType && errorType === "NotFoundError") {
+          return next(new NotFoundError("", errorMessages));
+        }
+        if (errorType && errorType === "UnauthenticatedError") {
+          return next(new UnauthenticatedError("", errorMessages));
+        }
+        return next(new BadRequestError("", errorMessages));
       }
       next();
     },
   ];
 };
 
-// This middleware validate the user input when create and update a job
-const validateJobInput = withValidationErrors([
-  body("company").notEmpty().withMessage(" company is required "),
-  body("position").notEmpty().withMessage(" position is required "),
-  body("jobLocation").notEmpty().withMessage(" jobLocation is required "),
-  body("jobStatus")
-    .isIn(Object.values(JOB_STATUS))
-    .withMessage(" invalid job status value "),
-  body("jobType")
-    .isIn(Object.values(JOB_TYPE))
-    .withMessage(" invalid job type value "),
-]);
+const validateField = (field: string, message: string) => {
+  return body(field).notEmpty().withMessage(message);
+};
 
 // This middleware validate the user input when delete, update or get job using a mongo db id parameter
-const validateParamId = withValidationErrors([
-  param("id").custom(async (value, { req }) => {
-    // This will check if mongodb id is valid
-    const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
-    if (!isValidMongoId) {
-      throw new BadRequestError(`invalid MongoDB id: ${value}`);
-    }
-    // This will check if job exist
-    const job = await JobSchema.findById(value).select("+createdBy");
-    if (!job) {
-      throw new NotFoundError(`no job with id ${value}`);
-    }
-
-    // This will check if the user is the owner or job
-    const request = req as CustomRequest;
-    const isAdmin = request.user.role === "admin";
-    const isOwner = request.user.userId.toString() === job.createdBy.toString();
-    // If is not admin then true, so the admin can see the job from other users
-    // If is not the owner of the job then true
-    if (!isAdmin && !isOwner) {
-      throw new UnauthorizedError("Not authorized to access this route");
-    }
-  }),
-]);
-
-// This middleware validate the user input (request body) when register user
-const validateRegisterInput = withValidationErrors([
-  body("name").notEmpty().withMessage(" Name is required "),
-  body("lastName").notEmpty().withMessage(" LastName is required "),
-  body("location").notEmpty().withMessage(" Location is required "),
-  body("email")
-    .notEmpty()
-    .withMessage(" Email is required ")
-    .isEmail()
-    .withMessage(" Invalid email format ")
-    .custom(async (email) => {
-      const user = await UserSchema.findOne({ email });
-      if (user) {
-        throw new BadRequestError(" Email already exist ");
+const validateParamId = <T extends mongoose.Document>(
+  model: mongoose.Model<T>,
+  userField: string,
+  resourceName: string
+) => {
+  return param("id")
+    .exists()
+    .withMessage(VALIDATION_MESSAGES.REQUIRED_PARAMETER_ID)
+    .custom(async (value, { req }) => {
+      // This will check if mongodb id is valid
+      const isValidMongoId = mongoose.isValidObjectId(value);
+      if (!isValidMongoId) {
+        return Promise.reject(VALIDATION_MESSAGES.INVALID_MONGO_ID(value));
       }
-    }),
-  body("userName")
-    .notEmpty()
-    .withMessage(" userName is required ")
-    .isLength({ min: 5 })
-    .withMessage(" userName must be at least 5 characters long ")
-    .isLowercase()
-    .withMessage(" userName must be lowercase ")
-    .custom(async (userName) => {
-      const user = await UserSchema.findOne({ userName });
-      if (user) {
-        throw new BadRequestError(" userName already exist ");
+      // This will check if job exist
+      const query = model.findById(value);
+      if (userField) {
+        query.select(`+${userField}`);
       }
-    }),
-  body("password")
-    .notEmpty()
-    .withMessage(" Password is required ")
+      const document = await query;
+      if (!document) {
+        return Promise.reject(
+          VALIDATION_MESSAGES.NOT_FOUND(resourceName, value)
+        );
+      }
+      // This will check if the user is the owner or job
+      const request = req as CustomRequest;
+      const isAdmin = request.user.role === "admin";
+      const isOwner =
+        request.user.userId.toString() ===
+        document[userField as keyof T].toString();
+      // If is not admin then true, so the admin can see the job from other users and if is not the owner of the job then true
+      if (!isAdmin && !isOwner) {
+        return Promise.reject(VALIDATION_MESSAGES.INVALID_AUTHORIZATION);
+      }
+    });
+};
+
+const validatePasswordInput = (
+  field: string,
+  fieldMessage: string,
+  strongPasswordMessage: string
+) => {
+  return validateField(field, fieldMessage)
     .isStrongPassword({
       minLength: 8,
       minLowercase: 1,
       minUppercase: 1,
       minSymbols: 1,
     })
-    .withMessage(
-      " Password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
-    ),
-]);
+    .withMessage(strongPasswordMessage);
+};
 
-// This middleware will validate the user login request body
-const validateLoginInput = withValidationErrors([
-  body("email").isEmail().withMessage(" Invalid email address ").optional(),
-  body("userName")
-    .isLength({ min: 5 })
-    .withMessage(" userName min length must be of 5 ")
-    .optional(),
-  body("password").notEmpty().withMessage(" Password is required "),
-]);
+const checkUserExists = async <T extends mongoose.Document>(
+  model: mongoose.Model<T>,
+  schemaSearch: mongoose.FilterQuery<T>,
+  validationMessage: string
+) => {
+  const document = await model.findOne(schemaSearch);
+  if (document) {
+    return Promise.reject(validationMessage);
+  }
+  return Promise.resolve(true);
+};
 
-const validateUpdateUserInput = withValidationErrors([
-  body("name").notEmpty().withMessage(" Name is required "),
-  body("lastName").notEmpty().withMessage(" LastName is required "),
-  body("location").notEmpty().withMessage(" Location is required "),
-  body("avatar")
-    .optional()
-    .custom((value, { req }) => {
+const validateImage = (inputName: string, optionalChaining = false) => {
+  return withValidationErrors([
+    body(inputName).custom((_, { req }) => {
+      if (!req.file && !optionalChaining) {
+        return Promise.reject(
+          VALIDATION_MESSAGES.MEDIA_NOT_PROVIDED(inputName)
+        );
+      }
       if (
+        req.file &&
         !["image/png", "image/jpg", "image/jpeg", "image/svg+xml"].includes(
           req.file.mimetype
         )
       ) {
-        throw new BadRequestError(
-          " avatar field required and image of type .png, .jpg, .jpeg or .svg format "
+        return Promise.reject(
+          VALIDATION_MESSAGES.INVALID_MEDIA_FORMAT(inputName)
         );
       }
-      return true;
+      return Promise.resolve(true);
     }),
+  ]);
+};
+
+const validateAtLeastOneField = (fields: string[], errorMessage: string) => {
+  return body().custom((_, { req }) => {
+    const missingFields = fields.every((field) => !req.body[field]);
+    if (missingFields) {
+      return Promise.reject(errorMessage);
+    }
+    return Promise.resolve(true);
+  });
+};
+
+const validatePasswordsMatch = (value: string, req: Request) => {
+  if (req.body.newPassword !== value) {
+    return Promise.reject(VALIDATION_MESSAGES.PASSWORDS_DO_NOT_MATCH);
+  }
+  return Promise.resolve(true);
+};
+
+const validateJobIdParam = withValidationErrors([
+  validateParamId(JobSchema, "createdBy", "job"),
+]);
+
+// This middleware validate the user input when create and update a job
+const validateJobInput = withValidationErrors([
+  validateField("company", VALIDATION_MESSAGES.REQUIRED_VALUE("Company")),
+  validateField("position", VALIDATION_MESSAGES.REQUIRED_VALUE("Position")),
+  validateField(
+    "jobLocation",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("jobLocation")
+  ),
+  validateField("jobStatus", VALIDATION_MESSAGES.REQUIRED_VALUE("jobStatus"))
+    .isIn(Object.values(JOB_STATUS))
+    .withMessage(
+      VALIDATION_MESSAGES.INVALID_VALUE("job status", Object.values(JOB_STATUS))
+    ),
+  validateField("jobType", VALIDATION_MESSAGES.REQUIRED_VALUE("jobType"))
+    .isIn(Object.values(JOB_TYPE))
+    .withMessage(
+      VALIDATION_MESSAGES.INVALID_VALUE("job type", Object.values(JOB_TYPE))
+    ),
+]);
+
+// This middleware validate the user input (request body) when register user
+const validateRegisterInput = withValidationErrors([
+  validateField("name", VALIDATION_MESSAGES.REQUIRED_VALUE("Name")),
+  validateField("lastName", VALIDATION_MESSAGES.REQUIRED_VALUE("LastName")),
+  validateField("location", VALIDATION_MESSAGES.REQUIRED_VALUE("Location")),
+  validateField("email", VALIDATION_MESSAGES.REQUIRED_VALUE("Email"))
+    .isEmail()
+    .withMessage(VALIDATION_MESSAGES.INVALID_EMAIL_FORMAT)
+    .custom(async (email) => {
+      return checkUserExists(
+        UserSchema,
+        { email },
+        VALIDATION_MESSAGES.EMAIL_ALREADY_EXIST
+      );
+    }),
+  validateField("userName", VALIDATION_MESSAGES.REQUIRED_VALUE("userName"))
+    .isLength({ min: 5 })
+    .withMessage(VALIDATION_MESSAGES.REQUIRED_USER_LENGTH)
+    .isLowercase()
+    .withMessage(" userName must be lowercase ")
+    .custom(async (userName) => {
+      return checkUserExists(
+        UserSchema,
+        { userName },
+        VALIDATION_MESSAGES.USERNAME_ALREADY_EXIST
+      );
+    }),
+  validatePasswordInput(
+    "password",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("Password"),
+    VALIDATION_MESSAGES.STRONG_PASSWORD("Password")
+  ),
+]);
+
+// This middleware will validate the user login request body
+const validateLoginInput = withValidationErrors([
+  body("email")
+    .isEmail()
+    .withMessage(VALIDATION_MESSAGES.INVALID_EMAIL)
+    .optional(),
+  body("userName")
+    .isLength({ min: 5 })
+    .withMessage(VALIDATION_MESSAGES.REQUIRED_USER_LENGTH)
+    .optional(),
+  validateField("password", VALIDATION_MESSAGES.REQUIRED_VALUE("Password")),
+  validateAtLeastOneField(
+    ["email", "userName"],
+    VALIDATION_MESSAGES.EMAIL_OR_USERNAME_IS_REQUIRED
+  ),
+]);
+
+const validateUpdateUserInput = withValidationErrors([
+  validateField("name", VALIDATION_MESSAGES.REQUIRED_VALUE("Name")),
+  validateField("lastName", VALIDATION_MESSAGES.REQUIRED_VALUE("LastName")),
+  validateField("location", VALIDATION_MESSAGES.REQUIRED_VALUE("Location")),
 ]);
 
 const validateImageSize = (
@@ -162,172 +258,111 @@ const validateImageSize = (
   next: NextFunction
 ) => {
   if (err instanceof multer.MulterError) {
-    throw new BadRequestError("Size of image must be 500 KB (0.5M) or less");
+    throw new BadRequestError(VALIDATION_MESSAGES.IMAGE_SIZE_LIMIT);
+  }
+  // This will catch the "Only images are allowed" BadRequestError
+  if (err) {
+    return next(err);
   }
   next();
 };
 
 const validateProfileParamId = withValidationErrors([
-  param("id").custom(async (value, { req }) => {
-    // This will check if mongodb id is valid
-    const isValidMongoId = mongoose.Types.ObjectId.isValid(value);
-    if (!isValidMongoId) {
-      throw new BadRequestError(`invalid MongoDB id: ${value}`);
-    }
-    // This will check if user exist
-    const user = await UserSchema.findById(value);
-    if (!user) {
-      throw new NotFoundError(`no user with id ${value}`);
-    }
-
-    // This will check if the user is the owner or job
-    const request = req as CustomRequest;
-    const isAdmin = request.user.role === "admin";
-    const isOwner = request.user.userId.toString() === user._id.toString();
-    // If is not admin then true, so the admin can see the job from other users
-    // If is not the owner of the job then true
-    if (!isAdmin && !isOwner) {
-      throw new UnauthorizedError("Not authorized to access this route");
-    }
-  }),
+  validateParamId(UserSchema, undefined, "user"),
 ]);
 
 const validateVerifyEmail = withValidationErrors([
-  body("email")
-    .notEmpty()
-    .withMessage(" Email is required ")
+  validateField("email", VALIDATION_MESSAGES.REQUIRED_VALUE("Email"))
     .isEmail()
-    .withMessage(" Invalid email format ")
+    .withMessage(VALIDATION_MESSAGES.INVALID_EMAIL_FORMAT)
     .custom(async (email, { req }) => {
       const user = await UserSchema.findOne({ email });
       if (!user) {
-        throw new BadRequestError(" Verification Failed ");
+        return Promise.reject(VALIDATION_MESSAGES.VERIFICATION_FAILED);
       }
+      return Promise.resolve(true);
     }),
-  body("verificationToken")
-    .notEmpty()
-    .withMessage(" verificationToken is required "),
+  validateField(
+    "verificationToken",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("Verification token")
+  ),
 ]);
 
 const validateForgotPasswordInput = withValidationErrors([
-  body("email").isEmail().withMessage(" Invalid email address ").optional(),
+  body("email")
+    .isEmail()
+    .withMessage(VALIDATION_MESSAGES.INVALID_EMAIL_FORMAT)
+    .optional(),
   body("userName")
     .isLength({ min: 5 })
-    .withMessage(" userName min length must be of 5 ")
+    .withMessage(VALIDATION_MESSAGES.REQUIRED_USER_LENGTH)
     .optional(),
-  body().custom(async (_, { req }) => {
-    const { email, userName } = req.body;
-    if (!email && !userName) {
-      throw new BadRequestError(
-        `You need to provide at least email or userName`
-      );
-    }
-    return true;
-  }),
+  validateAtLeastOneField(
+    ["email", "userName"],
+    VALIDATION_MESSAGES.EMAIL_OR_USERNAME_IS_REQUIRED
+  ),
 ]);
 
 const validateResetPassword = withValidationErrors([
-  body("email")
-    .notEmpty()
-    .withMessage(" Email is required ")
+  validateField("email", VALIDATION_MESSAGES.REQUIRED_VALUE("Email"))
     .isEmail()
-    .withMessage(" Invalid email format "),
-  body("token").notEmpty().withMessage(" token is required "),
-  body("newPassword")
-    .notEmpty()
-    .withMessage(" New password is required ")
-    .isStrongPassword({
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minSymbols: 1,
-    })
-    .withMessage(
-      " New password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
-    ),
-  body("newPasswordConfirm")
-    .notEmpty()
-    .withMessage(" New password confirm is required ")
-    .isStrongPassword({
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minSymbols: 1,
-    })
-    .withMessage(
-      " New password confirm must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
-    )
-    .custom((value, { req }) => {
-      const request = req as Request;
-      if (request.body.newPassword !== value) {
-        throw new BadRequestError(" Passwords do not match ");
-      }
-      return true;
-    }),
+    .withMessage(VALIDATION_MESSAGES.INVALID_EMAIL_FORMAT),
+  validateField("token", VALIDATION_MESSAGES.REQUIRED_VALUE("Token")),
+  validatePasswordInput(
+    "newPassword",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("New password"),
+    VALIDATION_MESSAGES.STRONG_PASSWORD("New password")
+  ),
+  validatePasswordInput(
+    "newPasswordConfirm",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("New password confirm"),
+    VALIDATION_MESSAGES.STRONG_PASSWORD("New password confirm")
+  ).custom((value, { req }) => {
+    return validatePasswordsMatch(value, req as Request);
+  }),
 ]);
 
 const validateUpdateUserPasswordInput = withValidationErrors([
-  body("oldPassword")
-    .notEmpty()
-    .withMessage(" Current password is required ")
-    .custom(async (value, { req }) => {
-      const request = req as CustomRequest;
-      const user = await UserSchema.findOne({
-        _id: request.user.userId,
-      }).select("+password");
-      const isPasswordCorrect = await comparePassword(
-        value,
-        user.password.toString()
-      );
-      if (!isPasswordCorrect) {
-        throw new UnauthenticatedError("Invalid Credentials");
-      }
-    }),
-  body("newPassword")
-    .notEmpty()
-    .withMessage(" New password is required ")
-    .isStrongPassword({
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minSymbols: 1,
-    })
-    .withMessage(
-      " Password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
-    )
-    .custom(async (value, { req }) => {
-      const request = req as CustomRequest;
-      if (request.body.oldPassword === value) {
-        throw new BadRequestError(
-          " The password must not be the same as the one used for "
-        );
-      }
-      return true;
-    }),
-  body("newPasswordConfirm")
-    .notEmpty()
-    .withMessage(" New password is required ")
-    .isStrongPassword({
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minSymbols: 1,
-    })
-    .withMessage(
-      " Password must be at least 8 characters long. At least one uppercase. At least one lower case. At least one special character. "
-    )
-    .custom(async (value, { req }) => {
-      const request = req as CustomRequest;
-      if (request.body.newPassword !== value) {
-        throw new BadRequestError(" Passwords do not match ");
-      }
-      return true;
-    }),
+  validateField(
+    "oldPassword",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("Current password")
+  ).custom(async (value, { req }) => {
+    const request = req as CustomRequest;
+    const user = await UserSchema.findOne({
+      _id: request.user.userId,
+    }).select("+password");
+    const isPasswordCorrect = await comparePassword(
+      value,
+      user.password.toString()
+    );
+    if (!isPasswordCorrect) {
+      return Promise.reject(VALIDATION_MESSAGES.INVALID_CREDENTIALS);
+    }
+  }),
+
+  validatePasswordInput(
+    "newPassword",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("New password"),
+    VALIDATION_MESSAGES.STRONG_PASSWORD("New password")
+  ).custom(async (value, { req }) => {
+    const request = req as CustomRequest;
+    if (request.body.oldPassword === value) {
+      return Promise.reject(VALIDATION_MESSAGES.NEW_PASSWORD_SAME_AS_OLD);
+    }
+    return Promise.resolve(true);
+  }),
+  validatePasswordInput(
+    "newPasswordConfirm",
+    VALIDATION_MESSAGES.REQUIRED_VALUE("New password confirm"),
+    VALIDATION_MESSAGES.STRONG_PASSWORD("New password confirm")
+  ).custom(async (value, { req }) => {
+    return validatePasswordsMatch(value, req as Request);
+  }),
 ]);
 
 export {
   validateJobInput,
-  validateParamId,
+  validateJobIdParam,
   validateRegisterInput,
   validateLoginInput,
   validateUpdateUserInput,
@@ -337,4 +372,5 @@ export {
   validateForgotPasswordInput,
   validateResetPassword,
   validateUpdateUserPasswordInput,
+  validateImage,
 };
