@@ -5,9 +5,7 @@ import { Response } from "express";
 import { CustomRequest, JwtPayload } from "../interfaces";
 import { JobSchema, TokenSchema, UserSchema } from "../models";
 import { StatusCodes } from "http-status-codes";
-import {
-  REFRESH_TOKEN_EXPIRY_MS,
-} from "../helpers/constants";
+import { REFRESH_TOKEN_EXPIRY_MS } from "../helpers/constants";
 import {
   setAuthCookies,
   hashPassword,
@@ -15,6 +13,7 @@ import {
   createAccessJWT,
 } from "../helpers";
 import { BadRequestError } from "../errors/customErrors";
+import { formatImage } from "../middleware/multerMiddleware";
 
 const getCurrentUser = async (req: CustomRequest, res: Response) => {
   const user = await UserSchema.findOne({ _id: req.user.userId });
@@ -35,6 +34,7 @@ const updateUser = async (req: CustomRequest, res: Response) => {
   session.startTransaction();
   try {
     if (req.file) {
+      const file = formatImage(req.file);
       // {
       //   fieldname: 'avatar',
       //   originalname: 'demo.jpg',
@@ -45,9 +45,10 @@ const updateUser = async (req: CustomRequest, res: Response) => {
       //   path: 'public\\uploads\\buttons.jpg',
       //   size: 86121
       // }
-      const response = await cloudinary.v2.uploader.upload(req.file.path);
+      // const response = await cloudinary.v2.uploader.upload(req.file.path); // Original code
+      const response = await cloudinary.v2.uploader.upload(file);
       // we remove the uploaded image from public/uploads after we upload it in cloudinary
-      await fs.promises.unlink(req.file.path);
+      // await fs.promises.unlink(req.file.path);
       req.body.avatar = response.secure_url;
       req.body.avatarPublicId = response.public_id;
     }

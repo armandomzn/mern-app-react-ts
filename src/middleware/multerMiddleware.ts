@@ -1,17 +1,20 @@
-import { Request } from "express";
+import path from "path";
 import multer from "multer";
+import DatParser from "datauri/parser.js";
+import { Request } from "express";
 import { BadRequestError } from "../errors/customErrors";
-const storage = multer.diskStorage({
-  // This is the temporary path where the images will be stored
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads");
-  },
-  filename: function (req, file, cb) {
-    // This will be the filename of the image
-    const fileName = file.originalname;
-    cb(null, fileName);
-  },
-});
+const storage = multer.memoryStorage();
+// const storage = multer.diskStorage({
+//   // This is the temporary path where the images will be stored
+//   destination: function (req, file, cb) {
+//     cb(null, "public/uploads");
+//   },
+//   filename: function (req, file, cb) {
+//     // This will be the filename of the image
+//     const fileName = file.originalname;
+//     cb(null, fileName);
+//   },
+// });
 
 export const upload = multer({
   storage,
@@ -30,3 +33,11 @@ export const upload = multer({
     }
   },
 });
+
+const parser = new DatParser(); // converts the image file to a data URI
+
+export const formatImage = (file: Express.Multer.File) => {
+  const fileExtension = path.extname(file.originalname).toString(); // ex -> .jpeg
+  // file.buffer -> image in memory
+  return parser.format(fileExtension, file.buffer).content; // ex -> data:image/jpeg;base64,/9j/4AAQSkZ...
+};
