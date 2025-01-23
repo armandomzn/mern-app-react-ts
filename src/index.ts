@@ -33,7 +33,7 @@ cloudinary.v2.config({
 // Built-in middleware
 // We use the static middleware to load static files (in this case the images that the Profile component from client app uses to load an profile image using the multer middleware) from public folder
 app.use(express.json());
-app.use(express.static(path.resolve(__dirname, path.join("public"))));
+app.use(express.static(path.resolve(__dirname, path.join("../public"))));
 
 // Router middleware
 app.use("/api/v1/auth", authRouter);
@@ -64,6 +64,10 @@ app.post(
     return res.status(200).json({ msg: "works" });
   }
 );
+
+app.get("*", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "../public", "index.html"));
+});
 
 // When the route we are looking for is not found in the routes previously defined in the router middleware, then any request we are making will fall into this route showing not found
 app.use("*", (req: Request, res: Response) => {

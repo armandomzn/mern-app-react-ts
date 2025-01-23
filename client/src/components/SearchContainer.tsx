@@ -3,11 +3,7 @@ import { Wrapper } from "../assets/wrappers/DashboardFormPage";
 import { useUser } from "../pages/DashboardLayout";
 import FormRow from "./FormRow";
 import FormRowSelect from "./FormRowSelect";
-import {
-  JOB_SORT,
-  JOB_STATUS,
-  JOB_TYPE,
-} from "../../../backend/src/helpers/constants";
+import { JOB_STATUS, JOB_TYPE, JOB_SORT } from "../../../src/helpers/constants";
 import { useAllJobsContext } from "../pages/AllJobs";
 
 const SearchContainer = () => {
@@ -34,7 +30,7 @@ const SearchContainer = () => {
       }, 2000);
     };
   };
-  
+
   return (
     <Wrapper $isDarkTheme={isDarkTheme}>
       <h3>search form</h3>

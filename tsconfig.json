@@ -5,7 +5,7 @@
     "target": "ES2022",
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": "src",
+    "baseUrl": "./src",
     "noImplicitAny": true,
     "typeRoots": ["types.d.ts"]
   },
