@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import {
   LoaderFunction,
   Outlet,
@@ -10,7 +10,7 @@ import {
 import { Wrapper } from "../assets/wrappers/Dashboard";
 import { BigSidebar, Loading, Navbar, SmallSidebar } from "../components";
 import { agent } from "../api/agent";
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { checkDefaultTheme } from "../utils/checkDefaultTheme";
 import { DashBoardContextProps, UserPayload } from "../interfaces";
 import { QueryClient, useQuery } from "@tanstack/react-query";
@@ -63,6 +63,25 @@ const DashboardLayout = ({ queryClient }: Props) => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(checkDefaultTheme);
   const [isLogoutContainer, setIsLogoutContainer] = useState(false);
+  // In case cookies fail this will logout automatically the user to the main page
+  const [isAuthError, setIsAuthError] = useState(false);
+
+  axios.interceptors.response.use(
+    function (response) {
+      // Any status code that lie within the range of 2xx cause this function to trigger
+      // Do something with response data
+      return response;
+    },
+    function (error) {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      // Do something with response error
+      if (error?.response?.status === 401) {
+        setIsAuthError(true);
+      }
+
+      return Promise.reject(error);
+    }
+  );
 
   const logoutUser = async () => {
     // We go to main page when logout and delete the session cookie from the server when logout, this is server job
@@ -84,6 +103,15 @@ const DashboardLayout = ({ queryClient }: Props) => {
   const toggleLogoutContainer = (state: boolean) => {
     setIsLogoutContainer(state);
   };
+
+  useEffect(() => {
+    const handleLogout = async () => {
+      if (isAuthError) {
+        await logoutUser();
+      }
+    };
+    handleLogout();
+  }, [isAuthError]);
 
   return (
     <DashBoardContext.Provider
