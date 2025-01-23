@@ -41,7 +41,6 @@ const authenticateUser = async (
     const payload = verifyJWT(REFRESH_TOKEN, true) as JwtPayload;
     const isRefreshingToken = await TokenSchema.findOne({
       user: payload.userId,
-      refreshToken: REFRESH_TOKEN,
     });
     const user = await UserSchema.findById(payload.userId);
 
