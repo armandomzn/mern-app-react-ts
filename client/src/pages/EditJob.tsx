@@ -11,10 +11,10 @@ import { useDashBoardContext } from "./DashboardLayout";
 import { AxiosResponse, isAxiosError } from "axios";
 import { FormRow, SubmitBtn } from "../components";
 import FormRowSelect from "../components/FormRowSelect";
-import { JOB_STATUS, JOB_TYPE } from "../../../src/helpers/constants";
 import { ServerJobResponse } from "../interfaces";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { showToast } from "../utils/showToast";
+import { JOB_STATUS, JOB_TYPE } from "../utils/constants";
 
 const singleJobQuery = (id: string) => {
   return {

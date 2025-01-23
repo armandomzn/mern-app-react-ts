@@ -3,8 +3,8 @@ import { Wrapper } from "../assets/wrappers/DashboardFormPage";
 import { useUser } from "../pages/DashboardLayout";
 import FormRow from "./FormRow";
 import FormRowSelect from "./FormRowSelect";
-import { JOB_STATUS, JOB_TYPE, JOB_SORT } from "../../../src/helpers/constants";
 import { useAllJobsContext } from "../pages/AllJobs";
+import { JOB_SORT, JOB_STATUS, JOB_TYPE } from "../utils/constants";
 
 const SearchContainer = () => {
   const { isDarkTheme } = useUser();
