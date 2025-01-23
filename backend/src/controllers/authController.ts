@@ -1,13 +1,9 @@
+import crypto from "crypto";
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { BadRequestError, UnauthenticatedError } from "../errors/customErrors";
-import crypto from "crypto";
 import { TokenSchema, UserSchema } from "../models";
 import { CustomRequest } from "../interfaces";
-import {
-  ACCESS_TOKEN_EXPIRY,
-  PASSWORD_TEN_MINUTES_EXPIRY,
-} from "../helpers/constants";
 import {
   setAuthCookies,
   setCookie,
@@ -17,7 +13,12 @@ import {
   sendResetPasswordEmail,
   sendResetSuccessPasswordEmail,
   sendVerificationEmail,
-  createJWT,
+  createAccessJWT,
+  createRefreshJWT,
+  COOKIE_EXPIRES_ONE_DAY_MS,
+  PASSWORD_TEN_MINUTES_EXPIRY,
+  ACCESS_TOKEN,
+  REFRESH_TOKEN,
 } from "../helpers";
 
 const register = async (req: Request, res: Response) => {
@@ -71,42 +72,34 @@ const login = async (req: Request, res: Response) => {
     throw new UnauthenticatedError("Please verify your email");
   }
 
-  // We create refreshToken, this will update the accessToken each time it expires
-  let newRefreshToken = crypto.randomBytes(40).toString("hex");
   // We generate the main data for Token model
   const userAgent = req.headers["user-agent"];
   const ip = req.ip;
   // The token expiration is oneDay
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24);
+  const expiresAt = new Date(Date.now() + COOKIE_EXPIRES_ONE_DAY_MS);
 
   // We invalidate old tokens in Token schema
   await TokenSchema.deleteMany({ user: user._id });
+
+  // We create the access token with duration of 5 minutes
+  const accessTokenJWT = createAccessJWT({
+    userId: user._id,
+    userName: user.userName,
+    role: user.role,
+  });
+
+  // We create refreshToken with duration of oneDay by default
+  const refreshTokenJWT = createRefreshJWT({
+    userId: user._id,
+  });
 
   // Create token object
   await TokenSchema.create({
     userAgent,
     expiresAt,
     ip,
-    refreshToken: newRefreshToken,
+    refreshToken: refreshTokenJWT,
     user: user._id,
-  });
-
-  // We create the access token with duration of 5 minutes
-  const accessTokenJWT = createJWT(
-    {
-      userId: user._id,
-      userName: user.userName,
-      role: user.role,
-    },
-    ACCESS_TOKEN_EXPIRY
-  );
-
-  // We create refreshToken with duration of oneDay by default, and we pass extra parameter which is the refreshToken
-  const refreshTokenJWT = createJWT({
-    userId: user._id,
-    userName: user.userName,
-    role: user.role,
-    refreshToken: newRefreshToken,
   });
   // We create the cookies to store the accessToken and refreshToken, the authMiddleware check for each time you want to access a resource to use the access token or refresh it by generating a new one if necessary and extend the life of the token by deleting the old one.
   setAuthCookies(res, accessTokenJWT, refreshTokenJWT);
@@ -116,8 +109,8 @@ const login = async (req: Request, res: Response) => {
 const logout = async (req: CustomRequest, res: Response) => {
   await TokenSchema.deleteMany({ user: req.user.userId });
 
-  setCookie(res, "accessToken", "logout", { expires: new Date(Date.now()) });
-  setCookie(res, "refreshToken", "logout", { expires: new Date(Date.now()) });
+  setCookie(res, ACCESS_TOKEN, "logout", { expires: new Date(Date.now()) });
+  setCookie(res, REFRESH_TOKEN, "logout", { expires: new Date(Date.now()) });
 
   return res.status(StatusCodes.OK).json({ message: "User Logged Out" });
 };
