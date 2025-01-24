@@ -37,7 +37,6 @@ import ProfileUpdatePassword, {
   profileUpdatePasswordAction,
 } from "./pages/ProfileUpdatePassword";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ErrorElement } from "./components";
 
 checkDefaultTheme();
@@ -146,7 +145,6 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
       <RouterProvider router={router} />
     </QueryClientProvider>
   );
