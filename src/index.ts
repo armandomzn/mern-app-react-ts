@@ -37,7 +37,7 @@ cloudinary.v2.config({
 app.use(express.json());
 app.use(
   express.static(
-    path.resolve(__dirname, path.join("..", "client", "dist", "index.html"))
+    path.resolve(__dirname, path.join("..", "client", "dist"))
   )
 );
 app.use(helmet()); // Help secure Express apps by setting HTTP response headers.
