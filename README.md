@@ -20,7 +20,7 @@ The application was built using the **MERN** stack (MongoDB, Express, React, Nod
 ---
 
 ## Features
-- **User authentication and account management**: Includes email confirmation for account verification (you will receive an activation email from armandomm98@hotmail.com using the turboSMTP service).
+- **User authentication and account management**: Includes email confirmation for account verification (you will receive an activation email from mernjobs@gmail.com using GMAIL SMTP service).
 - **Password reset**: Available whether you are authenticated in the application or not.
 - **Update user properties**: Allows updating various user properties, including the avatar, which is stored in Cloudinary.
 - **Job management**: Create, delete, and update jobs.
