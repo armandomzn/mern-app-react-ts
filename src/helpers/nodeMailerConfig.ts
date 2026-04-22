@@ -8,6 +8,6 @@ export default {
     pass: process.env.USER_PASSWORD_MAIL_TRANSPORTER,
   },
   tls: {
-    rejectUnauthorized: false, // If false the page's trust certificate won't be checked.
+    rejectUnauthorized: true, // If false the page's trust certificate won't be checked.
   },
 };
